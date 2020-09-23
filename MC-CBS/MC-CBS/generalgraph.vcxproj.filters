@@ -1,0 +1,234 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="general-graph\agents_loader.cpp">
+      <Filter>header</Filter>
+    </ClCompile>
+    <ClCompile Include="general-graph\driver.cpp">
+      <Filter>header</Filter>
+    </ClCompile>
+    <ClCompile Include="general-graph\ecbs_node.cpp">
+      <Filter>header</Filter>
+    </ClCompile>
+    <ClCompile Include="general-graph\ICBSNode.cpp">
+      <Filter>header</Filter>
+    </ClCompile>
+    <ClCompile Include="general-graph\ICBSSearch.cpp">
+      <Filter>header</Filter>
+    </ClCompile>
+    <ClCompile Include="general-graph\LLNode.cpp">
+      <Filter>header</Filter>
+    </ClCompile>
+    <ClCompile Include="general-graph\MDD.cpp">
+      <Filter>header</Filter>
+    </ClCompile>
+    <ClCompile Include="general-graph\searchgraph.cpp">
+      <Filter>header</Filter>
+    </ClCompile>
+    <ClCompile Include="general-graph\single_agent_ecbs.cpp">
+      <Filter>header</Filter>
+    </ClCompile>
+    <ClCompile Include="general-graph\SingleAgentICBS.cpp">
+      <Filter>header</Filter>
+    </ClCompile>
+    <ClCompile Include="..\yaml-cpp-master\src\binary.cpp">
+      <Filter>yaml</Filter>
+    </ClCompile>
+    <ClCompile Include="..\yaml-cpp-master\src\convert.cpp">
+      <Filter>yaml</Filter>
+    </ClCompile>
+    <ClCompile Include="..\yaml-cpp-master\src\directives.cpp">
+      <Filter>yaml</Filter>
+    </ClCompile>
+    <ClCompile Include="..\yaml-cpp-master\src\emit.cpp">
+      <Filter>yaml</Filter>
+    </ClCompile>
+    <ClCompile Include="..\yaml-cpp-master\src\emitfromevents.cpp">
+      <Filter>yaml</Filter>
+    </ClCompile>
+    <ClCompile Include="..\yaml-cpp-master\src\emitter.cpp">
+      <Filter>yaml</Filter>
+    </ClCompile>
+    <ClCompile Include="..\yaml-cpp-master\src\emitterstate.cpp">
+      <Filter>yaml</Filter>
+    </ClCompile>
+    <ClCompile Include="..\yaml-cpp-master\src\emitterutils.cpp">
+      <Filter>yaml</Filter>
+    </ClCompile>
+    <ClCompile Include="..\yaml-cpp-master\src\exceptions.cpp">
+      <Filter>yaml</Filter>
+    </ClCompile>
+    <ClCompile Include="..\yaml-cpp-master\src\exp.cpp">
+      <Filter>yaml</Filter>
+    </ClCompile>
+    <ClCompile Include="..\yaml-cpp-master\src\contrib\graphbuilder.cpp">
+      <Filter>yaml</Filter>
+    </ClCompile>
+    <ClCompile Include="..\yaml-cpp-master\src\contrib\graphbuilderadapter.cpp">
+      <Filter>yaml</Filter>
+    </ClCompile>
+    <ClCompile Include="..\yaml-cpp-master\src\memory.cpp">
+      <Filter>yaml</Filter>
+    </ClCompile>
+    <ClCompile Include="..\yaml-cpp-master\src\node.cpp">
+      <Filter>yaml</Filter>
+    </ClCompile>
+    <ClCompile Include="..\yaml-cpp-master\src\node_data.cpp">
+      <Filter>yaml</Filter>
+    </ClCompile>
+    <ClCompile Include="..\yaml-cpp-master\src\nodebuilder.cpp">
+      <Filter>yaml</Filter>
+    </ClCompile>
+    <ClCompile Include="..\yaml-cpp-master\src\nodeevents.cpp">
+      <Filter>yaml</Filter>
+    </ClCompile>
+    <ClCompile Include="..\yaml-cpp-master\src\null.cpp">
+      <Filter>yaml</Filter>
+    </ClCompile>
+    <ClCompile Include="..\yaml-cpp-master\src\ostream_wrapper.cpp">
+      <Filter>yaml</Filter>
+    </ClCompile>
+    <ClCompile Include="..\yaml-cpp-master\src\parse.cpp">
+      <Filter>yaml</Filter>
+    </ClCompile>
+    <ClCompile Include="..\yaml-cpp-master\src\parser.cpp">
+      <Filter>yaml</Filter>
+    </ClCompile>
+    <ClCompile Include="..\yaml-cpp-master\src\regex_yaml.cpp">
+      <Filter>yaml</Filter>
+    </ClCompile>
+    <ClCompile Include="..\yaml-cpp-master\src\scanner.cpp">
+      <Filter>yaml</Filter>
+    </ClCompile>
+    <ClCompile Include="..\yaml-cpp-master\src\scanscalar.cpp">
+      <Filter>yaml</Filter>
+    </ClCompile>
+    <ClCompile Include="..\yaml-cpp-master\src\scantag.cpp">
+      <Filter>yaml</Filter>
+    </ClCompile>
+    <ClCompile Include="..\yaml-cpp-master\src\scantoken.cpp">
+      <Filter>yaml</Filter>
+    </ClCompile>
+    <ClCompile Include="..\yaml-cpp-master\src\simplekey.cpp">
+      <Filter>yaml</Filter>
+    </ClCompile>
+    <ClCompile Include="..\yaml-cpp-master\src\singledocparser.cpp">
+      <Filter>yaml</Filter>
+    </ClCompile>
+    <ClCompile Include="..\yaml-cpp-master\src\stream.cpp">
+      <Filter>yaml</Filter>
+    </ClCompile>
+    <ClCompile Include="..\yaml-cpp-master\src\tag.cpp">
+      <Filter>yaml</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="general-graph\agents_loader.h">
+      <Filter>header</Filter>
+    </ClInclude>
+    <ClInclude Include="general-graph\common.h">
+      <Filter>header</Filter>
+    </ClInclude>
+    <ClInclude Include="general-graph\ecbs_node.h">
+      <Filter>header</Filter>
+    </ClInclude>
+    <ClInclude Include="general-graph\epea_search.h">
+      <Filter>header</Filter>
+    </ClInclude>
+    <ClInclude Include="general-graph\ICBSNode.h">
+      <Filter>header</Filter>
+    </ClInclude>
+    <ClInclude Include="general-graph\ICBSSearch.h">
+      <Filter>header</Filter>
+    </ClInclude>
+    <ClInclude Include="general-graph\LLNode.h">
+      <Filter>header</Filter>
+    </ClInclude>
+    <ClInclude Include="general-graph\MDD.h">
+      <Filter>header</Filter>
+    </ClInclude>
+    <ClInclude Include="general-graph\searchgraph.h">
+      <Filter>header</Filter>
+    </ClInclude>
+    <ClInclude Include="general-graph\single_agent_ecbs.h">
+      <Filter>header</Filter>
+    </ClInclude>
+    <ClInclude Include="general-graph\SingleAgentICBS.h">
+      <Filter>header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\yaml-cpp-master\src\collectionstack.h">
+      <Filter>yaml</Filter>
+    </ClInclude>
+    <ClInclude Include="..\yaml-cpp-master\src\directives.h">
+      <Filter>yaml</Filter>
+    </ClInclude>
+    <ClInclude Include="..\yaml-cpp-master\src\emitterstate.h">
+      <Filter>yaml</Filter>
+    </ClInclude>
+    <ClInclude Include="..\yaml-cpp-master\src\emitterutils.h">
+      <Filter>yaml</Filter>
+    </ClInclude>
+    <ClInclude Include="..\yaml-cpp-master\src\exp.h">
+      <Filter>yaml</Filter>
+    </ClInclude>
+    <ClInclude Include="..\yaml-cpp-master\src\contrib\graphbuilderadapter.h">
+      <Filter>yaml</Filter>
+    </ClInclude>
+    <ClInclude Include="..\yaml-cpp-master\src\indentation.h">
+      <Filter>yaml</Filter>
+    </ClInclude>
+    <ClInclude Include="..\yaml-cpp-master\src\nodebuilder.h">
+      <Filter>yaml</Filter>
+    </ClInclude>
+    <ClInclude Include="..\yaml-cpp-master\src\nodeevents.h">
+      <Filter>yaml</Filter>
+    </ClInclude>
+    <ClInclude Include="..\yaml-cpp-master\src\ptr_vector.h">
+      <Filter>yaml</Filter>
+    </ClInclude>
+    <ClInclude Include="..\yaml-cpp-master\src\regex_yaml.h">
+      <Filter>yaml</Filter>
+    </ClInclude>
+    <ClInclude Include="..\yaml-cpp-master\src\regeximpl.h">
+      <Filter>yaml</Filter>
+    </ClInclude>
+    <ClInclude Include="..\yaml-cpp-master\src\scanner.h">
+      <Filter>yaml</Filter>
+    </ClInclude>
+    <ClInclude Include="..\yaml-cpp-master\src\scanscalar.h">
+      <Filter>yaml</Filter>
+    </ClInclude>
+    <ClInclude Include="..\yaml-cpp-master\src\scantag.h">
+      <Filter>yaml</Filter>
+    </ClInclude>
+    <ClInclude Include="..\yaml-cpp-master\src\setting.h">
+      <Filter>yaml</Filter>
+    </ClInclude>
+    <ClInclude Include="..\yaml-cpp-master\src\singledocparser.h">
+      <Filter>yaml</Filter>
+    </ClInclude>
+    <ClInclude Include="..\yaml-cpp-master\src\stream.h">
+      <Filter>yaml</Filter>
+    </ClInclude>
+    <ClInclude Include="..\yaml-cpp-master\src\streamcharsource.h">
+      <Filter>yaml</Filter>
+    </ClInclude>
+    <ClInclude Include="..\yaml-cpp-master\src\stringsource.h">
+      <Filter>yaml</Filter>
+    </ClInclude>
+    <ClInclude Include="..\yaml-cpp-master\src\tag.h">
+      <Filter>yaml</Filter>
+    </ClInclude>
+    <ClInclude Include="..\yaml-cpp-master\src\token.h">
+      <Filter>yaml</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="header">
+      <UniqueIdentifier>{241f2245-145a-4de1-8808-4b6cf834748c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="yaml">
+      <UniqueIdentifier>{f1ef4a05-2881-4bee-9b49-0d5e0cebf1bc}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
