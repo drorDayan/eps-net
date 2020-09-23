@@ -125,6 +125,7 @@ bool Conflict::isConflicting(const searchGraph_t& G, vertex_t v, const list<vert
 	{
 		if (u == v)
 			continue;
+		//DROR: It seems like it is possible to get a vertex from its vertex_t using the searchGraph_t
 		if (G[v].generalizedVertexConflicts.find(u) == G[v].generalizedVertexConflicts.end())
 			return false;
 	}

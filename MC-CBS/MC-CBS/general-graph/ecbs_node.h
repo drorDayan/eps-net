@@ -19,6 +19,7 @@ class ECBSNode
   list<tuple<vertex_t, vertex_t, int>> constraints; 
   ECBSNode* parent;
   vector<pathEntry> path;
+  //DROR: g_val will need to be a double
   int g_val;  // (total cost)
   int num_of_collisions;  // (number of collisions)
   int time_expanded;

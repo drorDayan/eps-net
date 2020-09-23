@@ -16,7 +16,7 @@ typedef searchGraphTraits_t::edge_descriptor edge_t;
 
 typedef Eigen::Matrix<float, 3, 1, Eigen::DontAlign> position_t;
 
-//DROR
+//DROR: This class has the name and pos of each vertex
 struct Vertex
 {
   std::string name;

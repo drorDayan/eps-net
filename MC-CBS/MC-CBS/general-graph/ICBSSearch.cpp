@@ -663,7 +663,7 @@ void ICBSSearch::computeHeuristics(vector<int>& heuristics, vertex_t goal, const
 		auto neighbours = boost::adjacent_vertices(curr->vertex, G);
 		for (auto newV : make_iterator_range(neighbours))
 		{
-			//DROR
+			//DROR: here costs are updated, we might need it to be dist(G[newV].pos, G[curr->vertex].pos)
 			int next_g_val = curr->g_val + 1;
 			LLNode* next = new LLNode(newV, next_g_val, 0, NULL, 0);
 			it = nodes.find(next);
@@ -767,7 +767,7 @@ bool ICBSSearch::runICBSSearch()
 		{  // found a solution (and finish the while look)
 			runtime = (std::clock() - start); 
 			solution_found = true;
-			//DROR
+			//DROR: This shows that the solution_cost is the g_val
 			solution_cost = curr->g_val;
 			cout << solution_cost << " ; " << solution_cost - dummy_start->g_val << " ; " <<
 				HL_num_expanded << " ; " << HL_num_generated << " ; " <<
