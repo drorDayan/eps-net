@@ -130,3 +130,5 @@ dmypy.json
 
 # Visual studio
 .vs/
+*.obj
+*.tlog
