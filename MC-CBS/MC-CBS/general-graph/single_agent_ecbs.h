@@ -22,11 +22,11 @@ class SingleAgentECBS
 
  std:: vector<pathEntry> path;  // a path that takes the agent from initial to goal location satisying all constraints
   // consider changing path from vector to deque (efficient front insertion)
-  int path_cost;
+ double path_cost;
   const vertex_t startV;
   const vertex_t goalV;
   const int agent_id;
-  const std::vector<int> my_heuristic;  // this is the precomputed heuristic for this agent
+  const std::vector<double> my_heuristic;  // this is the precomputed heuristic for this agent
 
   const searchGraph_t G;
 
@@ -34,7 +34,7 @@ class SingleAgentECBS
   uint64_t num_generated;
 
   double lower_bound;  // FOCAL's lower bound ( = e_weight * min_f_val)
-  int min_f_val;  // min f-val seen so far
+  double min_f_val;  // min f-val seen so far
 
   // note -- handle typedefs is defined inside the class (hence, include node.h is not enough).
   heap_open_t open_list;
@@ -47,7 +47,7 @@ class SingleAgentECBS
   LLNode* deleted_node;
 
 
-  SingleAgentECBS(vertex_t start, vertex_t goal, const std::vector<int>& my_heuristic,
+  SingleAgentECBS(vertex_t start, vertex_t goal, const std::vector<double>& my_heuristic,
 					const searchGraph_t& G, int agent_id);
 
 
@@ -73,7 +73,7 @@ class SingleAgentECBS
   int numOfConflictsForStep(vertex_t currV, vertex_t nextV, int next_timestep, const std::vector<std::vector<pathEntry>*>& paths);
 
   // Iterate over OPEN and adds to FOCAL all nodes with: 1) f-val > old_min_f_val ; and 2) f-val * f_weight < new_lower_bound.
-  void updateFocalList(int old_lower_bound, int new_lower_bound);
+  void updateFocalList(double old_lower_bound, double new_lower_bound);
 
   // Returns true if a collision free path found (with cost up to f_weight * f-min) while
   //   minimizing the number of internal conflicts (that is conflicts with known_paths for other agents found so far).

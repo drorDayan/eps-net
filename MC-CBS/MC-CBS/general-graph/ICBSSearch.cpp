@@ -630,7 +630,7 @@ void ICBSSearch::compact(ICBSNode& node)
 }
 
 // adding new nodes to FOCAL (those with min-f-val*f_weight between the old and new LB)
-void ICBSSearch::updateFocalList(int old_lower_bound, int new_lower_bound) 
+void ICBSSearch::updateFocalList(double old_lower_bound, double new_lower_bound)
 {
 	for (ICBSNode* n : open_list) 
 	{
@@ -641,7 +641,7 @@ void ICBSSearch::updateFocalList(int old_lower_bound, int new_lower_bound)
 }
 
 //Compute Heuristics
-void ICBSSearch::computeHeuristics(vector<int>& heuristics, vertex_t goal, const searchGraph_t& G)
+void ICBSSearch::computeHeuristics(vector<double>& heuristics, vertex_t goal, const searchGraph_t& G)
 {
 	// generate a heap that can save nodes (and a open_handle)
 	boost::heap::fibonacci_heap< LLNode*, boost::heap::compare<LLNode::compare_node> > heap;
@@ -664,7 +664,7 @@ void ICBSSearch::computeHeuristics(vector<int>& heuristics, vertex_t goal, const
 		for (auto newV : make_iterator_range(neighbours))
 		{
 			//DROR: here costs are updated, we might need it to be dist(G[newV].pos, G[curr->vertex].pos)
-			int next_g_val = curr->g_val + 1;
+			double next_g_val = curr->g_val + (G[newV].pos - G[curr->vertex].pos).norm();// 1;
 			LLNode* next = new LLNode(newV, next_g_val, 0, NULL, 0);
 			it = nodes.find(next);
 			if (it == nodes.end()) {  // add the newly generated node to heap and hash table
@@ -867,7 +867,7 @@ ICBSSearch::ICBSSearch(int TIME_LIMIT, const searchGraph_t& G, const std::vector
 	int delta = starts.size() / num_of_agents;
 	for (int i = 0; i < num_of_agents; i++) 
 	{
-		vector<int> heuristics;
+		vector<double> heuristics;
 		computeHeuristics(heuristics,  goals[i * delta], G);
 		search_engines[i] = new SingleAgentECBS(starts[i * delta], goals[i * delta], heuristics, G, i);
 	}

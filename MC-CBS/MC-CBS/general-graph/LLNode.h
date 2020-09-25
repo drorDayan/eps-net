@@ -20,8 +20,8 @@ class LLNode
 {
 public:
 	vertex_t vertex;
-	int g_val;
-	int h_val = 0;
+	double g_val;
+	double h_val = 0;
 	LLNode* parent;
 	int timestep = 0;
 	int num_internal_conf = 0;
@@ -64,7 +64,7 @@ public:
 
 	LLNode();
 	LLNode(const LLNode& other);
-	LLNode(const vertex_t& vertex, int g_val, int h_val,
+	LLNode(const vertex_t& vertex, double g_val, double h_val,
 		LLNode* parent, int timestep,
 		int num_internal_conf = 0, bool in_openlist = false);
 	inline double getFVal() const { return g_val + h_val; }

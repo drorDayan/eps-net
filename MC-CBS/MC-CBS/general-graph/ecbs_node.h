@@ -20,13 +20,13 @@ class ECBSNode
   ECBSNode* parent;
   vector<pathEntry> path;
   //DROR: g_val will need to be a double
-  int g_val;  // (total cost)
+  double g_val;  // (total cost)
   int num_of_collisions;  // (number of collisions)
   int time_expanded;
   int time_generated;
-  int sum_min_f_vals;  // saves the overall sum of min f-vals.
-  int ll_min_f_val;  // saves this agent's low-level min-f-val (as reported by the search that found the path stored)
-  int path_cost;  // saves this agent's low-level path-cost
+  double sum_min_f_vals;  // saves the overall sum of min f-vals.
+  double ll_min_f_val;  // saves this agent's low-level min-f-val (as reported by the search that found the path stored)
+  double path_cost;  // saves this agent's low-level path-cost
 
   // the following is used to comapre nodes in the OPEN list
   struct compare_node

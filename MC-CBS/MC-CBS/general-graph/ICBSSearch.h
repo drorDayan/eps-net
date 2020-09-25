@@ -14,13 +14,13 @@ public:
 	const searchGraph_t G;
 	double focal_list_threshold;
 	double HL_w; // suboptimal w for high level
-	int min_sum_f_vals;
+	double min_sum_f_vals;
 	vector < vector<pathEntry>* > paths;  // agents paths
 	vector < vector<pathEntry>* > paths_found_initially;  // contain initial paths found
 	int num_of_agents;
 
 	bool solution_found;
-	int solution_cost;
+	double solution_cost;
 
 	uint64_t HL_num_expanded = 0;
 	uint64_t HL_num_generated = 0;
@@ -62,8 +62,8 @@ public:
 	void generateChild(ICBSNode* n1, const ICBSNode* curr);
 
 	void buildMDD(ICBSNode& curr, int id, int lookahead);
-	void updateFocalList(int old_lower_bound, int new_lower_bound);
-	void computeHeuristics(vector<int>& heuristics, vertex_t goal, const searchGraph_t& G);
+	void updateFocalList(double old_lower_bound, double new_lower_bound);
+	void computeHeuristics(vector<double>& heuristics, vertex_t goal, const searchGraph_t& G);
 	inline void releaseClosedListNodes();
 	ICBSSearch(int TIME_LIMIT, const searchGraph_t& G, const std::vector<vertex_t>& starts, const std::vector<vertex_t>& goals, int num_of_agents, constraint_strategy c, double HL_w = 1, int lookahead = 0, bool useh = false);
 	~ICBSSearch();

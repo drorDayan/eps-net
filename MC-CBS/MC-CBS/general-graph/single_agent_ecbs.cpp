@@ -13,7 +13,7 @@ using std::endl;
 using boost::heap::fibonacci_heap;
 
 
-SingleAgentECBS::SingleAgentECBS(vertex_t startV, vertex_t goalV, const std::vector<int>& my_heuristic, const searchGraph_t& G, int agent_id) :
+SingleAgentECBS::SingleAgentECBS(vertex_t startV, vertex_t goalV, const std::vector<double>& my_heuristic, const searchGraph_t& G, int agent_id) :
     my_heuristic(my_heuristic), G(G), startV(startV), goalV(goalV), agent_id(agent_id)
 {
   this->num_expanded = 0;
@@ -167,7 +167,7 @@ int SingleAgentECBS::numOfConflictsForStep(vertex_t currV, vertex_t nextV, int n
 }
 
 
-void SingleAgentECBS::updateFocalList(int old_lower_bound, int new_lower_bound) 
+void SingleAgentECBS::updateFocalList(double old_lower_bound, double new_lower_bound)
 {
   for (LLNode* n : open_list)
   {
@@ -228,9 +228,10 @@ bool SingleAgentECBS::findPath(const std::vector < std::list< std::pair<vertex_t
 			if (!isConstrained(curr->vertex, nextV, next_timestep, constraints))
 			{
 				// compute cost to next_id via curr node
-				int cost = 1;
-				int next_g_val = curr->g_val + cost;
-				int next_h_val = my_heuristic[nextV];
+				//DROR this is where the length dependend cost should be used
+				double cost = (G[nextV].pos - G[curr->vertex].pos).norm();// 1;
+				double next_g_val = curr->g_val + cost;
+				double next_h_val = my_heuristic[nextV];
 				int next_internal_conflicts = 0;
 				
 				next_internal_conflicts = curr->num_internal_conf + numOfConflictsForStep(curr->vertex, nextV, next_timestep, paths);
@@ -309,9 +310,10 @@ bool SingleAgentECBS::findPath(const std::vector < std::list< std::pair<vertex_t
 		if (!isConstrained(curr->vertex, curr->vertex, next_timestep, constraints))
 		{
 			// compute cost to next_id via curr node
-			int cost = 1;
-			int next_g_val = curr->g_val + cost;
-			int next_h_val = my_heuristic[curr->vertex];
+			//DROR: This is the cost for staying in place, this should be 0, but it doesn't realy work...
+			double cost = 0.01;
+			double next_g_val = curr->g_val +cost;
+			double next_h_val = my_heuristic[curr->vertex];
 			int next_internal_conflicts = 0;
 			next_internal_conflicts = curr->num_internal_conf + numOfConflictsForStep(curr->vertex, curr->vertex, next_timestep, paths);
 			// generate (maybe temporary) node
