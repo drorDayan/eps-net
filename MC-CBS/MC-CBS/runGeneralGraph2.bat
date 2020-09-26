@@ -1,8 +1,8 @@
 @echo off 
 
-set map="D:\Dev\CBS\MC-CBS\instances\drones\roadmapWithConflicts_swap50.yaml"
+set map="D:\Dev\eps-net\MC-CBS\instances\Dror\2 2D robots conflicts edge and vert.yml"
 set algos="ASYM" "MAX" 
-set output="outputs\double_cost_0.01_penalty"
+set output="outputs\2 2D rob conflicts double_cost_0.0000001_penalty"
 set time=300
 
 for /l %%k in (2,1,8) do (

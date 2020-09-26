@@ -14,7 +14,7 @@ typedef searchGraphTraits_t::edge_descriptor edge_t;
 #define TIME_LIMIT_DEFAULT 3600000
 
 //DROR: In 2D this 3 should probably be 2
-typedef Eigen::Matrix<float, 3, 1, Eigen::DontAlign> position_t;
+typedef Eigen::Matrix<float, /*3*/2, 1, Eigen::DontAlign> position_t;
 
 //DROR: This class has the name and pos of each vertex
 struct Vertex

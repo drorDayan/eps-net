@@ -311,7 +311,7 @@ bool SingleAgentECBS::findPath(const std::vector < std::list< std::pair<vertex_t
 		{
 			// compute cost to next_id via curr node
 			//DROR: This is the cost for staying in place, this should be 0, but it doesn't realy work...
-			double cost = 0.01;
+			double cost = 0.0000000001;
 			double next_g_val = curr->g_val +cost;
 			double next_h_val = my_heuristic[curr->vertex];
 			int next_internal_conflicts = 0;

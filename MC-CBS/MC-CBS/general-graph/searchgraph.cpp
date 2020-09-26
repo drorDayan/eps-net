@@ -6,13 +6,13 @@
 // Yaml
 #include "yaml-cpp/yaml.h"
 
-
+//DROR the 3D to 2D means a change here as well
 position_t nodeAsPos(const YAML::Node& node)
 {
-  return position_t(
-      node[0].as<float>(),
-      node[1].as<float>(),
-      node[2].as<float>());
+    return position_t(
+        node[0].as<float>(),
+        node[1].as<float>());// ,
+      //node[2].as<float>());
 }
 
 void loadSearchGraph(
@@ -216,7 +216,8 @@ void saveSearchGraph(const searchGraph_t& searchGraph, const std::string& fileNa
     out << YAML::Value << searchGraph[v].name;
     out << YAML::Key << "pos";
     const position_t& pos = searchGraph[v].pos;
-    out << YAML::Value << YAML::Flow << YAML::BeginSeq << pos.x() << pos.y() << pos.z() << YAML::EndSeq;
+    //DROR 3D to 2D change here as well
+    out << YAML::Value << YAML::Flow << YAML::BeginSeq << pos.x() << pos.y() << /*pos.z() <<*/ YAML::EndSeq;
     if (searchGraph[v].generalizedVertexConflicts.size()) 
 	{
       out << YAML::Key << "conflicts";

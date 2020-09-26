@@ -1,0 +1,28 @@
+vertices:
+  - name: start0
+    pos: [0.01, 0.4]
+    vertexConflicts: []
+    edgeConflicts: []
+  - name: start1
+    pos: [0.99, 0.61]
+    vertexConflicts: []
+    edgeConflicts: []
+  - name: goal0
+    pos: [0.99, 0.4]
+    vertexConflicts: []
+    edgeConflicts: []
+  - name: goal1
+    pos: [0.01, 0.61]
+    vertexConflicts: []
+    edgeConflicts: []
+edges:
+  - name: e0
+    from: start0
+    to: goal0
+    edgeConflicts: []
+    vertexConflicts: []
+  - name: e1
+    from: goal1
+    to: start1
+    edgeConflicts: []
+    vertexConflicts: []
