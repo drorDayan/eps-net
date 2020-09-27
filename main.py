@@ -1,12 +1,12 @@
 import math
 
 
-eps = 0.25
+eps = 99999999999
 delta = 0.1
 
 
-def cords_to_2d_points(cord_x, cord_y):
-    res = [[x, y] for x in cord_x for y in cord_y]
+def cords_to_2d_points(cords_x, cords_y):
+    res = [[x, y] for x in cords_x for y in cords_y]
     return res
 
 
