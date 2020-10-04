@@ -1,8 +1,9 @@
 from config import *
-from CGALPY.Arr2 import *
-from CGALPY.Ker import *
-from CGALPY.Pol2 import *
-from CGALPY.BSO2 import *
+import CGALPY.Ker as KER
+
+Point_2 = KER.Point_2
+FT = KER.FT
+Gmpq = KER.Gmpq
 
 
 def read_polygon(filename):

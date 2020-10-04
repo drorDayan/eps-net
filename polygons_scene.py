@@ -6,12 +6,11 @@ import read_input
 from conversions import point_2_to_xy, tuples_list_to_polygon_2, polygon_2_to_tuples_list
 import ms_polygon_segment, linear_path_intersection_test
 
-from CGALPY.Arr2 import *
-from CGALPY.Ker import *
-from CGALPY.Pol2 import *
-from CGALPY.BSO2 import *
+import CGALPY.Ker as KER
 
-offset = -Vector_2(FT(0.5), FT(0.5))  # DROR this need to change as robots are going to become smaller
+FT = KER.FT
+
+offset = -KER.Vector_2(FT(0), FT(0))  # DROR this need to change as robots are going to become smaller
 
 class Polygons_scene():
   def __init__(self):
@@ -86,78 +85,78 @@ class Polygons_scene():
         anim = gui.parallel_animation(anim_l)
         gui.queue_animation(anim)
 
-  def is_path_valid(self):
-    check22 = True
-    if self.path == None: return False
-    if len(self.path) == 0: return False
-    robot_polygons = [None for i in range(self.robot_num)]
-    path_polygons = []
-    if len(self.path) > 1:
-      for i in range(len(self.path) - 1):
-        source = [None for i in range(self.robot_num)]
-        target = [None for i in range(self.robot_num)]
-        for j in range(len(self.robots)):
-          robot_polygons[j] = Polygon_2(self.robots[j])
-          source[j] = self.path[i][j]
-          target[j] = self.path[i+1][j]
-          if source[j] != target[j]:
-            s = Segment_2(source[j], target[j])
-            pwh = ms_polygon_segment.minkowski_sum_polygon_segment(robot_polygons[j], s)
-          else:
-            pwh = ms_polygon_segment.minkowski_sum_polygon_point(robot_polygons[j], source[j])
-          path_polygons.append(pwh)
-        for j in range(len(self.robots)):
-          for k in range(j, self.robot_num):
-            if linear_path_intersection_test.do_intersect(robot_polygons[j], robot_polygons[k], source, target): check22 = False
-
-    obstacle_polygons = []
-    for obs in self.obstacles:
-      p = Polygon_2(obs)
-      obstacle_polygons.append(p)
-
-    path_set = Polygon_set_2()
-    path_set.join_polygons_with_holes(path_polygons)
-    obstacles_set = Polygon_set_2()
-    obstacles_set.join_polygons(obstacle_polygons)
-
-    lst = []
-    path_set.polygons_with_holes(lst)
-    for pwh in lst:
-      p = pwh.outer_boundary()
-      lst = polygon_2_to_tuples_list(p)
-      gui.add_polygon(lst, Qt.lightGray).polygon.setZValue(-3)
-      for p in pwh.holes():
-        lst = polygon_2_to_tuples_list(p)
-        gui.add_polygon(lst, Qt.white).polygon.setZValue(-2)
-
-
-    # check that the origin matches the first point in the path
-    check01 = True
-    for i in range(self.robot_num):
-      if self.robots[i][0] - offset != self.path[0][i]:
-        check01 = False
-    # check that the destination matches the last point in the path
-    check11 = True
-    for i in range(self.robot_num):
-      if self.destinations[i] != self.path[-1][i]:
-        check11 = False
-    #check that there are no collisions
-    check21 = True if not path_set.do_intersect(obstacles_set) else False
-    res = (check01 and check11 and check21 and check22)
-    print("Valid path: ", res)
-    if check01 == False :
-      print("Origin mismatch")
-      print(self.robots[0][0] - offset, self.robots[1][0] - offset)
-      print(self.path[0][0], self.path[0][1])
-    if check11 == False :
-      print("Destination mismatch")
-      print(self.destinations[0], self.destinations[1])
-      print(self.path[-1][0], self.path[-1][1])
-    if check21 == False:
-      print("Movement along path intersects with obstacles")
-    if check22 == False:
-      print("The robots intersect each other")
-    return res
+  # def is_path_valid(self):
+  #   check22 = True
+  #   if self.path == None: return False
+  #   if len(self.path) == 0: return False
+  #   robot_polygons = [None for i in range(self.robot_num)]
+  #   path_polygons = []
+  #   if len(self.path) > 1:
+  #     for i in range(len(self.path) - 1):
+  #       source = [None for i in range(self.robot_num)]
+  #       target = [None for i in range(self.robot_num)]
+  #       for j in range(len(self.robots)):
+  #         robot_polygons[j] = Polygon_2(self.robots[j])
+  #         source[j] = self.path[i][j]
+  #         target[j] = self.path[i+1][j]
+  #         if source[j] != target[j]:
+  #           s = Segment_2(source[j], target[j])
+  #           pwh = ms_polygon_segment.minkowski_sum_polygon_segment(robot_polygons[j], s)
+  #         else:
+  #           pwh = ms_polygon_segment.minkowski_sum_polygon_point(robot_polygons[j], source[j])
+  #         path_polygons.append(pwh)
+  #       for j in range(len(self.robots)):
+  #         for k in range(j, self.robot_num):
+  #           if linear_path_intersection_test.do_intersect(robot_polygons[j], robot_polygons[k], source, target): check22 = False
+  #
+  #   obstacle_polygons = []
+  #   for obs in self.obstacles:
+  #     p = Polygon_2(obs)
+  #     obstacle_polygons.append(p)
+  #
+  #   path_set = Polygon_set_2()
+  #   path_set.join_polygons_with_holes(path_polygons)
+  #   obstacles_set = Polygon_set_2()
+  #   obstacles_set.join_polygons(obstacle_polygons)
+  #
+  #   lst = []
+  #   path_set.polygons_with_holes(lst)
+  #   for pwh in lst:
+  #     p = pwh.outer_boundary()
+  #     lst = polygon_2_to_tuples_list(p)
+  #     gui.add_polygon(lst, Qt.lightGray).polygon.setZValue(-3)
+  #     for p in pwh.holes():
+  #       lst = polygon_2_to_tuples_list(p)
+  #       gui.add_polygon(lst, Qt.white).polygon.setZValue(-2)
+  #
+  #
+  #   # check that the origin matches the first point in the path
+  #   check01 = True
+  #   for i in range(self.robot_num):
+  #     if self.robots[i][0] - offset != self.path[0][i]:
+  #       check01 = False
+  #   # check that the destination matches the last point in the path
+  #   check11 = True
+  #   for i in range(self.robot_num):
+  #     if self.destinations[i] != self.path[-1][i]:
+  #       check11 = False
+  #   #check that there are no collisions
+  #   check21 = True if not path_set.do_intersect(obstacles_set) else False
+  #   res = (check01 and check11 and check21 and check22)
+  #   print("Valid path: ", res)
+  #   if check01 == False :
+  #     print("Origin mismatch")
+  #     print(self.robots[0][0] - offset, self.robots[1][0] - offset)
+  #     print(self.path[0][0], self.path[0][1])
+  #   if check11 == False :
+  #     print("Destination mismatch")
+  #     print(self.destinations[0], self.destinations[1])
+  #     print(self.path[-1][0], self.path[-1][1])
+  #   if check21 == False:
+  #     print("Movement along path intersects with obstacles")
+  #   if check22 == False:
+  #     print("The robots intersect each other")
+  #   return res
 
 def set_up_scene():
   gui.clear_scene()
@@ -198,13 +197,13 @@ def load_path():
 def is_path_valid():
   ps.is_path_valid()
 
-def set_destinations():
-  s0 = gui.get_field(1).split(" ")
-  s1 = gui.get_field(2).split(" ")
-  destinations = [None, None]
-  destinations[0] = Point_2(FT(Gmpq(s0[0])), FT(Gmpq(s0[1])))
-  destinations[1] = Point_2(FT(Gmpq(s1[0])), FT(Gmpq(s1[1])))
-  ps.set_destinations(destinations)
+# def set_destinations():
+#   s0 = gui.get_field(1).split(" ")
+#   s1 = gui.get_field(2).split(" ")
+#   destinations = [None, None]
+#   destinations[0] = Point_2(FT(Gmpq(s0[0])), FT(Gmpq(s0[1])))
+#   destinations[1] = Point_2(FT(Gmpq(s1[0])), FT(Gmpq(s1[1])))
+#   ps.set_destinations(destinations)
 
 def animate_path():
   gui.play_queue()
@@ -222,6 +221,9 @@ def run_tests():
   gp.generate_path(path, ps.robots, ps.obstacles, ps.destinations)
   # print("Generated path via", path_name + ".generate_path")
 
+def unused():
+  return
+
 if __name__ == "__main__":
   import sys
   app = QtWidgets.QApplication(sys.argv)
@@ -238,8 +240,8 @@ if __name__ == "__main__":
   gui.set_button_text(0, "Load scene")
   gui.set_logic(1, run_and_animate)
   gui.set_button_text(1, "run_and_animate")
-  gui.set_logic(2, set_destinations)
-  gui.set_button_text(2, "Set destinations")
+  gui.set_logic(2, unused)
+  gui.set_button_text(2, "unused")
   gui.set_logic(3, generate_path)
   gui.set_button_text(3, "Generate path")
   gui.set_logic(4, load_path)

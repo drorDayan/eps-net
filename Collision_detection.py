@@ -1,12 +1,9 @@
 import CGALPY.Arr2 as Arr2
-from CGALPY.Ker import *
-from CGALPY.Pol2 import *
-from CGALPY.BSO2 import *
-from CGALPY.CH2 import *
-from CGALPY.SS import *
-from CGALPY.MN2 import *
-from CGALPY.PP2 import *
+import CGALPY.Ker as KER
+import CGALPY.Pol2 as POL2
+import CGALPY.MN2 as MN2
 
+FT = KER.FT
 
 class Collision_detector:
     cspace = None
@@ -18,8 +15,8 @@ class Collision_detector:
         arrangements = []
         # build an arrangement for each expanded polygon
         for polygon in obstacles:
-            pol = Polygon_2(polygon)
-            ms = approximated_offset_2(pol, offset, 0.001)
+            pol = POL2.Polygon_2(polygon)
+            ms = MN2.approximated_offset_2(pol, offset, 0.001)
             arr = Arr2.Arrangement_2()
             # Arrangement for the sum
             Arr2.insert(arr, [curve for curve in ms.outer_boundary().curves()])
@@ -48,7 +45,7 @@ class Collision_detector:
         self.cspace = res
         self.pl = Arr2.Arr_trapezoid_ric_point_location(self.cspace)
 
-    def is_edge_valid(self, curve: Segment_2):
+    def is_edge_valid(self, curve: KER.Segment_2):
         res = []
         if curve.is_degenerate():
             return True

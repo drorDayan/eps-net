@@ -1,5 +1,5 @@
 import math
-
+import yaml
 
 eps = 99999999999
 delta = 0.1
@@ -11,6 +11,13 @@ def cords_to_2d_points(cords_x, cords_y):
 
 
 if __name__ == "__main__":
+
+    with open("roadmapWithConflicts_swap50.yaml") as file:
+        # The FullLoader parameter handles the conversion from YAML
+        # scalar values to Python the dictionary format
+        fruits_list = yaml.load(file, Loader=yaml.FullLoader)
+        print("123")
+
     alpha = eps/math.sqrt(1+eps**2)
     edge_len = 1-2*delta
     ball_radius = alpha*delta

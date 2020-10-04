@@ -11,7 +11,12 @@ import Collision_detection
 import CGALPY.Ker as KER
 import CGALPY.SS as SS
 
+
 Config = Config()
+
+
+def point_d_to_point_2(x):
+    return KER.Point_2(x[0], x[1])
 
 
 class PrmNode:
@@ -20,6 +25,8 @@ class PrmNode:
         self.name = name
         self.out_connections = {}
         self.in_connections = {}
+        self.node_conflicts = []
+        self.edge_conflicts = []
         # self.bfs_dist_from_t = None
         # self.father_in_bfs_dist_from_t = None
         # self.real_dist_from_t = None
@@ -27,13 +34,18 @@ class PrmNode:
 
 
 class PrmEdge:
-    def __init__(self, src, dest):
+    def __init__(self, src, dest, eid):
         self.src = src
         self.dest = dest
+        self.name = "e"+str(eid)
+        self.segment = None
+        self.node_conflicts = []
+        self.edge_conflicts = set()
 
 
 class PrmGraph:
     def __init__(self, milestones):
+        self.edge_id = 0
         self.points_to_nodes = {}
         self.edges = []
         for milestone in milestones:
@@ -43,12 +55,42 @@ class PrmGraph:
 
     def insert_edge(self, milestone, neighbor):
         neighbor_node = self.points_to_nodes[neighbor]
+        if neighbor_node == milestone:
+            return
         if neighbor_node in milestone.out_connections or neighbor_node in milestone.in_connections:
             return
         milestone.out_connections[neighbor_node] = True
         neighbor_node.in_connections[milestone] = True
-        self.edges.append(PrmEdge(milestone, neighbor))
+        self.edges.append(PrmEdge(milestone, neighbor_node, self.edge_id))
+        self.edge_id += 1
 
+    def calculate_vertices_conflicts(self, nn, robot_radius):
+        for point, node in self.points_to_nodes.items():
+            nearest = nn.neighbors_in_radius(point, KER.FT(2)*robot_radius)
+            for neighbor in nearest:  # first point is self and no need for edge from v to itself
+                neighbor_node = self.points_to_nodes[neighbor]
+                if neighbor_node == node:
+                    continue
+                node.node_conflicts.append(neighbor_node)
+                neighbor_node.node_conflicts.append(node)
+
+    def calculate_edge_to_vertex_conflicts(self, robot_radius):
+        for edge in self.edges:
+            edge.segment = KER.Segment_2(point_d_to_point_2(edge.src.point), point_d_to_point_2(edge.dest.point))
+            for point, node in self.points_to_nodes.items():
+                if KER.squared_distance(point_d_to_point_2(point), edge.segment) < KER.FT(4)*robot_radius*robot_radius:
+                    node.edge_conflicts.append(edge)
+                    edge.node_conflicts.append(node)
+
+    def calculate_edge_to_edge_conflicts(self, robot_radius):
+        for edge1 in self.edges:
+            for edge2 in self.edges:
+                if edge1 == edge2:
+                    continue
+                else:
+                    if KER.squared_distance(edge1.segment, edge2.segment) < KER.FT(4)*robot_radius*robot_radius:
+                        edge1.edge_conflicts.add(edge2)
+                        edge2.edge_conflicts.add(edge1)
 
     # def add_node(self, p, is_sparse=False):
     #     if p not in self.points_to_nodes.keys():
@@ -206,7 +248,9 @@ def make_graph(cd, milestones, nn):
     for milestone in milestones:
         p = milestone.point
         nearest = nn.neighbors_in_radius(p, Config.connection_radius)
-        for neighbor in nearest[1:]:  # first point is self and no need for edge from v to itself
+        for neighbor in nearest:
+            if neighbor == milestone:
+                continue
             edge = KER.Segment_2(KER.Point_2(p[0], p[1]), KER.Point_2(neighbor[0], neighbor[1]))
             if cd.is_edge_valid(edge):
                 g.insert_edge(milestone, neighbor)
@@ -214,9 +258,10 @@ def make_graph(cd, milestones, nn):
     return g
 
 
-def generate_path(path, starts, obstacles, destinations, radius):
-    # start = time.time()
-    cd = Collision_detection.Collision_detector(obstacles, KER.FT(radius))
+def generate_path(path, starts, obstacles, destinations, in_radius):
+    start_t = time.time()
+    radius = KER.FT(in_radius)
+    cd = Collision_detection.Collision_detector(obstacles, radius)
     milestones = []
     for (i, start_p) in enumerate(starts):
         milestones.append(PrmNode(SS.Point_d(2, [start_p.x(), start_p.y()]), "start"+str(i)))
@@ -225,7 +270,34 @@ def generate_path(path, starts, obstacles, destinations, radius):
     milestones += generate_milestones(cd)
     nn = NeighborsFinder([milestone.point for milestone in milestones])
     g = make_graph(cd, milestones, nn)
+    g.calculate_vertices_conflicts(nn, radius)
+    g.calculate_edge_to_vertex_conflicts(radius)
+    g.calculate_edge_to_edge_conflicts(radius)
 
+    # dict_file = {"vertices": [{"name": vertex.name,
+    #                            "pos": [vertex.point[0].to_double(), vertex.point[1].to_double()],
+    #                            "vertexConflicts": [node.name for node in vertex.node_conflicts],
+    #                            "edgeConflicts": [e.name for e in vertex.edge_conflicts]} for vertex in g.points_to_nodes.values()]}
+    # with open("store_file.yaml", 'w') as file:
+    #     documents = yaml.dump(dict_file)
+
+    with open("out1.ymal", "w") as f:
+        f.write("vertices:\n")
+        for vertex in g.points_to_nodes.values():
+            f.write("  - name: " + vertex.name + "\n")
+            f.write("    pos: [" + str(vertex.point[0].to_double()) + ", " + str(vertex.point[1].to_double()) + "]\n")
+            f.write("    vertexConflicts: "+str([node.name for node in vertex.node_conflicts])+"\n")
+            f.write("    edgeConflicts: "+str([e.name for e in vertex.edge_conflicts])+"\n")
+        f.write("edges:\n")
+        for edge in g.edges:
+            f.write("  - name: " + edge.name + "\n")
+            f.write("    from: " + edge.src.name + "\n")
+            f.write("    to: " + edge.dest.name + "\n")
+            f.write("    edgeConflicts: "+str([e.name for e in edge.edge_conflicts])+"\n")
+            f.write("    vertexConflicts: "+str([node.name for node in edge.node_conflicts])+"\n")
+        f.flush()
+    print("GOODYYY", time.time()-start_t)
+    return
     # a = Segment_2(Point_2(0.5, 0.5), Point_2(21, 20.5))
     # print("Segment_2:", a, "is valid:", cd.is_edge_valid(a))
     # a = Segment_2(Point_2(0.5, 0.5), Point_2(1, 0.5))
