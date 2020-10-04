@@ -34,7 +34,7 @@ class MainWindowPlus(QtWidgets.QMainWindow):
 class GUI(object):
   width = 1600
   height = 1000
-  zoom = 50.0
+  zoom = 500.0
   base_line_width = 1
 
   def __init__(self):

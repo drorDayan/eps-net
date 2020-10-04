@@ -28,17 +28,35 @@ def read_point(filename):
 def read_polygon_scene(filename):
   out = []
   with open(filename, "r") as f:
-    for line in f:
+    # num robots
+    line = f.readline()
+    input_data = line.split(" ")
+    out.append(int(input_data[0]))
+    # radius
+    line = f.readline()
+    input_data = line.split(" ")
+    out.append(float(input_data[0]))
+    # start
+    out.append([])
+    for _ in range(out[0]):
+      line = f.readline()
       input_data = line.split(" ")
-      if len(input_data) == 1:
-        out.append(int(input_data[0]))
-      elif len(input_data) == 2:
-        out.append(Point_2(FT(Gmpq(input_data[0])), FT(Gmpq(input_data[1]))))
-      else:
-        polygon = []
-        for i in range(0, int(input_data[0])):
-          polygon.append(Point_2(FT(Gmpq(input_data[2 * i + 1])), FT((Gmpq(input_data[2 * i + 2])))))
-        out.append(polygon)
+      out[len(out)-1].append(Point_2(FT(Gmpq(input_data[0])), FT(Gmpq(input_data[1]))))
+    # goal
+    out.append([])
+    for _ in range(out[0]):
+      line = f.readline()
+      input_data = line.split(" ")
+      out[len(out)-1].append(Point_2(FT(Gmpq(input_data[0])), FT(Gmpq(input_data[1]))))
+
+    line = f.readline()
+    while line:
+      input_data = line.split(" ")
+      polygon = []
+      for i in range(0, int(input_data[0])):
+        polygon.append(Point_2(FT(Gmpq(input_data[2 * i + 1])), FT((Gmpq(input_data[2 * i + 2])))))
+      out.append(polygon)
+      line = f.readline()
   return out
 
 def save_path(path, filename):

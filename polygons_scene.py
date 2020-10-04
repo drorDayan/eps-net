@@ -16,6 +16,7 @@ offset = -Vector_2(FT(0.5), FT(0.5))  # DROR this need to change as robots are g
 class Polygons_scene():
   def __init__(self):
     self.robot_num = 0
+    self.radius = 0.0
     self.robots = []
     self.obstacles = []
     self.gui_robots = []
@@ -29,32 +30,28 @@ class Polygons_scene():
     colors = [Qt.yellow, Qt.green, Qt.black, Qt.blue, Qt.darkGreen, Qt.red, Qt.magenta, Qt.darkMagenta, Qt.darkGreen, Qt.darkCyan, Qt.cyan]
     for i in range(len(self.robots)):
       if (self.robots[i] != None):
-        self.gui_robots[i] = gui.add_polygon([point_2_to_xy(p) for p in self.robots[i]], colors[i])
+        self.gui_robots[i] = gui.add_disc(self.radius, *point_2_to_xy(self.robots[i]), colors[i])
     for obstacle in self.obstacles:
       self.gui_obstacles = []
       self.gui_obstacles.append(gui.add_polygon([point_2_to_xy(p) for p in obstacle], Qt.darkGray))
     for i in range(len(self.destinations)):
       if(self.destinations[i] != None):
-        self.gui_destinations[i] = gui.add_disc(0.05, *point_2_to_xy(self.destinations[i]), colors[i])
+        self.gui_destinations[i] = gui.add_disc(0.005, *point_2_to_xy(self.destinations[i]), colors[i])
 
   def load_scene(self, filename):
     scene = read_input.read_polygon_scene(filename)
     self.robot_num = scene[0]
+    self.radius = scene[1]
     # gui.set_field(2, " ".join(scene[0]))
-    destinations = [None for i in range(self.robot_num)]
-    self.gui_destinations = [None for i in range(self.robot_num)]
-    s = []
-    for i in range(self.robot_num):
-      destinations[i] = scene[i+1]
-      # s.append(str(destinations[i].x().exact()) + " " + str(destinations[i].y().exact()))
-      # gui.set_field(i+5, s[i])
+    destinations = scene[3]
+    self.gui_destinations = [None for _ in range(len(scene[3]))]
+
     self.set_destinations(destinations)
-    self.robots = [None for i in range(self.robot_num)]
-    self.gui_robots = [None for i in range(self.robot_num)]
-    for i in range(self.robot_num):
-      self.robots[i] = scene[i+self.robot_num+1]
+    self.robots = scene[2]
+    self.gui_robots = [None for _ in range(len(scene[2]))]
+
     self.obstacles = []
-    for i in range(1+2*self.robot_num, len(scene)):
+    for i in range(4, len(scene)):
       self.obstacles.append(scene[i])
     gui.clear_queue()
     self.draw_scene()
@@ -63,7 +60,7 @@ class Polygons_scene():
     self.destinations = destinations
     for i in range(len(self.gui_destinations)):
       if self.gui_destinations[i] == None:
-        self.gui_destinations[i] = gui.add_disc(0.05, *point_2_to_xy(destinations[i]), Qt.green)
+        self.gui_destinations[i] = gui.add_disc(0.005, *point_2_to_xy(destinations[i]), Qt.green)
       else:
         self.gui_destinations[i].pos = QPointF(*point_2_to_xy(destinations[i]))
 
@@ -175,7 +172,7 @@ def generate_path():
   gui.clear_queue()
   path_name = gui.get_field(3)
   gp = importlib.import_module(path_name)
-  gp.generate_path(ps.path, ps.robots, ps.obstacles, ps.destinations)
+  gp.generate_path(ps.path, ps.robots, ps.obstacles, ps.destinations, ps.radius)
   print("Generated path via", path_name + ".generate_path")
   ps.set_up_animation()
 
@@ -231,7 +228,7 @@ if __name__ == "__main__":
   gui = GUI()
   ps = Polygons_scene()
   gui.set_program_name("Multi-robot Motion Planning")
-  gui.set_field(0, "scenes/scene3")
+  gui.set_field(0, "scenes/scene1_r01_d005")
   # gui.set_field(0, "data/scenes/warehouse0")
   gui.set_field(3, "eps_prm")
   gui.set_field(4, "path0.txt")
