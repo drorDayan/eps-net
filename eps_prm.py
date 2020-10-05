@@ -27,10 +27,6 @@ class PrmNode:
         self.in_connections = {}
         self.node_conflicts = []
         self.edge_conflicts = []
-        # self.bfs_dist_from_t = None
-        # self.father_in_bfs_dist_from_t = None
-        # self.real_dist_from_t = None
-        # self.father_in_dist_from_t = None
 
 
 class PrmEdge:
@@ -65,6 +61,7 @@ class PrmGraph:
         self.edge_id += 1
 
     def calculate_vertices_conflicts(self, nn, robot_radius):
+        print("calculate_vertices_conflicts")
         for point, node in self.points_to_nodes.items():
             nearest = nn.neighbors_in_radius(point, KER.FT(2)*robot_radius)
             for neighbor in nearest:  # first point is self and no need for edge from v to itself
@@ -75,6 +72,7 @@ class PrmGraph:
                 neighbor_node.node_conflicts.append(node)
 
     def calculate_edge_to_vertex_conflicts(self, robot_radius):
+        print("calculate_edge_to_vertex_conflicts")
         for edge in self.edges:
             edge.segment = KER.Segment_2(point_d_to_point_2(edge.src.point), point_d_to_point_2(edge.dest.point))
             for point, node in self.points_to_nodes.items():
@@ -83,107 +81,18 @@ class PrmGraph:
                     edge.node_conflicts.append(node)
 
     def calculate_edge_to_edge_conflicts(self, robot_radius):
+        print("calculate_edge_to_edge_conflicts")
+        i = 0
         for edge1 in self.edges:
+            print(i)
+            i += 1
             for edge2 in self.edges:
-                if edge1 == edge2:
+                if edge1 == edge2 or edge2 in edge1.edge_conflicts:
                     continue
                 else:
                     if KER.squared_distance(edge1.segment, edge2.segment) < KER.FT(4)*robot_radius*robot_radius:
                         edge1.edge_conflicts.add(edge2)
                         edge2.edge_conflicts.add(edge1)
-
-    # def add_node(self, p, is_sparse=False):
-    #     if p not in self.points_to_nodes.keys():
-    #         p1_node = PrmNode(p, is_sparse)
-    #         self.points_to_nodes[p] = p1_node
-    #
-    # def insert_edge(self, p1, p2, is_sparse=False):
-    #     if p1 not in self.points_to_nodes.keys():
-    #         p1_node = PrmNode(p1, is_sparse=is_sparse)
-    #         self.points_to_nodes[p1] = p1_node
-    #     else:
-    #         p1_node = self.points_to_nodes[p1]
-    #     if p2 not in self.points_to_nodes.keys():
-    #         p2_node = PrmNode(p2, is_sparse=is_sparse)
-    #         self.points_to_nodes[p2] = p2_node
-    #     else:
-    #         p2_node = self.points_to_nodes[p2]
-    #     if p1_node == p2_node:
-    #         return
-    #     # noinspection PyArgumentList
-    #     dist = math.sqrt(Euclidean_distance().transformed_distance(p1_node.point, p2_node.point).to_double())
-    #     if is_sparse:
-    #         p1_node.sparse_connections[p2_node] = dist
-    #         p2_node.sparse_connections[p1_node] = dist
-    #     else:
-    #         p1_node.connections[p2_node] = dist
-    #         p2_node.connections[p1_node] = dist
-    #
-    # def has_path(self, p1, p2, is_sparse=False):
-    #     if p1 not in self.points_to_nodes.keys() or p2 not in self.points_to_nodes.keys():
-    #         return False
-    #     q = queue.Queue()
-    #     visited = {p1: True}
-    #     q.put(p1)
-    #     while not q.empty():
-    #         curr = q.get()
-    #         if curr == p2:
-    #             return True
-    #         else:
-    #             if is_sparse:
-    #                 keys = self.points_to_nodes[curr].sparse_connections.keys()
-    #             else:
-    #                 keys = self.points_to_nodes[curr].connections.keys()
-    #             for next_n in keys:
-    #                 next_p = next_n.point
-    #                 if next_p not in visited:
-    #                     visited[next_p] = True
-    #                     q.put(next_p)
-    #     return False
-    #
-    # def calc_bfs_dist_from_t(self, t):
-    #     if t not in self.points_to_nodes.keys():
-    #         return False
-    #     self.points_to_nodes[t].bfs_dist_from_t = 0
-    #     temp_i = 0
-    #     q = [(0, temp_i, t)]
-    #     heapq.heapify(q)
-    #     visited = {t: True}
-    #     while len(q) > 0:
-    #         c_dist, _, curr = heapq.heappop(q)
-    #         curr_n = self.points_to_nodes[curr]
-    #         for next_n in curr_n.connections.keys():
-    #             next_p = next_n.point
-    #             if next_p not in visited:
-    #                 next_n.bfs_dist_from_t = c_dist + 1
-    #                 next_n.father_in_bfs_dist_from_t = curr_n
-    #                 visited[next_p] = True
-    #                 temp_i += 1
-    #                 heapq.heappush(q, (next_n.bfs_dist_from_t, temp_i, next_p))
-    #     return True
-    #
-    # def calc_real_dist_from_t(self, t):
-    #     if t not in self.points_to_nodes.keys():
-    #         return False
-    #     self.points_to_nodes[t].real_dist_from_t = 0
-    #     temp_i = 0
-    #     q = [(0, temp_i, t)]
-    #     heapq.heapify(q)
-    #     done = {}
-    #     while len(q) > 0:
-    #         c_dist, _, curr = heapq.heappop(q)
-    #         done[curr] = True
-    #         curr_n = self.points_to_nodes[curr]
-    #         for next_n in curr_n.connections.keys():
-    #             next_p = next_n.point
-    #             if next_p not in done:
-    #                 temp_i += 1
-    #                 alt = c_dist + next_n.connections[curr_n]
-    #                 if next_n.real_dist_from_t is None or alt < next_n.real_dist_from_t:
-    #                     next_n.real_dist_from_t = alt
-    #                     next_n.father_in_dist_from_t = curr_n
-    #                     heapq.heappush(q, (next_n.real_dist_from_t, temp_i, next_p))
-    #     return True
 
 
 def cords_to_2d_points(cords_x, cords_y):
@@ -193,7 +102,7 @@ def cords_to_2d_points(cords_x, cords_y):
 
 def generate_milestones(cd):
     res = []
-    if Config.sample_mathod == "eps_net":
+    if Config.sample_method == "eps_net":
         i = 0
         half_points_diff = (Config.edge_len / Config.balls_per_dim) / 2
         l1_cords = [Config.delta + (2 * i - 1) * half_points_diff for i in range(1, Config.balls_per_dim + 1)]
@@ -205,43 +114,30 @@ def generate_milestones(cd):
             if cd.is_point_valid(point):
                 res.append(PrmNode(point, "v"+str(i)))
                 i += 1
-    return res
+        return res
 
-    # v = []
-    # if Config().sr_prm_config['use_grid']:
-    #     diff = FT(Config().sr_prm_config['grid_size'])
-    #     Config().sr_prm_config['number_of_neighbors_to_connect'] = 8
-    #     x = FT(min_x)
-    #     while x < FT(max_x):
-    #         y = FT(min_y)
-    #         while y < FT(max_y):
-    #             if cd.is_valid_conf(Point_2(x, y)):
-    #                 v.append(xy_to_2n_d_point(x, y))
-    #             y += diff
-    #         x += diff
-    # else:
-    #     while len(v) < n:
-    #         x = FT(random.uniform(min_x, max_x))
-    #         y = FT(random.uniform(min_y, max_y))
-    #         if cd.is_valid_conf(Point_2(x, y)):
-    #             v.append(xy_to_2n_d_point(x, y))
-    # return v
+    if Config.sample_method == "grid":
+        i = 0
+        points_diff = (Config.edge_len / (Config.grid_points_per_dim-1))
+        cords = [Config.delta + i * points_diff for i in range(Config.grid_points_per_dim)]
+        points = cords_to_2d_points(cords, cords)
+        for point in points:
+            if cd.is_point_valid(point):
+                res.append(PrmNode(point, "v"+str(i)))
+                i += 1
+        return res
 
+    if Config.sample_method == "random":
+        i = 0
+        points = [SS.Point_d(2, [KER.FT(random.uniform(Config.delta, 1-Config.delta)), KER.FT(random.uniform(Config.delta, 1-Config.delta))]) for _ in range(Config.num_of_sample_points)]
+        for point in points:
+            if cd.is_point_valid(point):
+                res.append(PrmNode(point, "v"+str(i)))
+                i += 1
+        return res
 
-# def make_graph(cd, milestones, origin, destination, create_sparse):
-#     milestones += [origin, destination]
-#     nn = NeighborsFinder(milestones)
-#     g = PrmGraph()
-#
-#     for milestone in milestones:
-#         g.add_node(milestone)
-#         # the + 1 to number_of_neighbors is to count for count v as it's neighbor
-#         nearest = nn.k_nn(milestone, Config().sr_prm_config['number_of_neighbors_to_connect'])
-#         for neighbor in nearest[1:]:  # first point is self and no need for edge from v to itself
-#             if cd.path_collision_free(milestone, neighbor):
-#                 g.insert_edge(milestone, neighbor)
-#
-#     return g
+    raise ValueError("Invalid configuration")
+
 
 def make_graph(cd, milestones, nn):
     g = PrmGraph(milestones)
@@ -270,18 +166,13 @@ def generate_path(path, starts, obstacles, destinations, in_radius):
     milestones += generate_milestones(cd)
     nn = NeighborsFinder([milestone.point for milestone in milestones])
     g = make_graph(cd, milestones, nn)
+    print("vertices amount:", len(g.points_to_nodes))
+    print("edges amount:", len(g.edges))
     g.calculate_vertices_conflicts(nn, radius)
     g.calculate_edge_to_vertex_conflicts(radius)
     g.calculate_edge_to_edge_conflicts(radius)
 
-    # dict_file = {"vertices": [{"name": vertex.name,
-    #                            "pos": [vertex.point[0].to_double(), vertex.point[1].to_double()],
-    #                            "vertexConflicts": [node.name for node in vertex.node_conflicts],
-    #                            "edgeConflicts": [e.name for e in vertex.edge_conflicts]} for vertex in g.points_to_nodes.values()]}
-    # with open("store_file.yaml", 'w') as file:
-    #     documents = yaml.dump(dict_file)
-
-    with open("out1.ymal", "w") as f:
+    with open(Config.out_file_name, "w") as f:
         f.write("vertices:\n")
         for vertex in g.points_to_nodes.values():
             f.write("  - name: " + vertex.name + "\n")
