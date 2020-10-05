@@ -59,7 +59,7 @@ class Polygons_scene():
     self.destinations = destinations
     for i in range(len(self.gui_destinations)):
       if self.gui_destinations[i] == None:
-        self.gui_destinations[i] = gui.add_disc(0.005, *point_2_to_xy(destinations[i]), Qt.green)
+        self.gui_destinations[i] = gui.add_disc(0.0005, *point_2_to_xy(destinations[i]), Qt.green)
       else:
         self.gui_destinations[i].pos = QPointF(*point_2_to_xy(destinations[i]))
 
