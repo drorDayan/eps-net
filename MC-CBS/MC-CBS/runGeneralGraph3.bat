@@ -1,9 +1,9 @@
 @echo off 
 
 set maps="D:\Dev\eps-net\MC-CBS\instances\Dror\multi10_0.05_eps_net.ymal" "D:\Dev\eps-net\MC-CBS\instances\Dror\multi10_0.05_grid.ymal" "D:\Dev\eps-net\MC-CBS\instances\Dror\multi10_0.05_random1.ymal" "D:\Dev\eps-net\MC-CBS\instances\Dror\multi10_0.05_random2.ymal"
-set algos="ASYM" "MAX" 
+set algos="ICBS" "ASYM" "MAX" 
 set output="outputs\pls work"
-set time=300
+set time=120
 
 for %%m in (%maps%) do (
 	for /l %%k in (2,1,2) do (
@@ -17,9 +17,6 @@ for %%m in (%maps%) do (
 )
 
 set maps="D:\Dev\eps-net\MC-CBS\instances\Dror\multi100_0.05_eps_net.ymal" "D:\Dev\eps-net\MC-CBS\instances\Dror\multi100_0.05_grid.ymal" "D:\Dev\eps-net\MC-CBS\instances\Dror\multi100_0.05_random.ymal"
-set algos="ASYM" "MAX" 
-set output="outputs\pls work"
-set time=300
 
 for %%m in (%maps%) do (
 	for /l %%k in (2,1,2) do (
@@ -33,9 +30,6 @@ for %%m in (%maps%) do (
 )
 
 set maps="D:\Dev\eps-net\MC-CBS\instances\Dror\multi100000_0.05_eps_net.ymal" "D:\Dev\eps-net\MC-CBS\instances\Dror\multi100000_0.05_grid.ymal" "D:\Dev\eps-net\MC-CBS\instances\Dror\multi100000_0.05_random.ymal"
-set algos="ASYM" "MAX" 
-set output="outputs\pls work"
-set time=300
 
 for %%m in (%maps%) do (
 	for /l %%k in (2,1,2) do (

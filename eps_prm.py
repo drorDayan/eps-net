@@ -80,7 +80,7 @@ class PrmGraph:
                     node.edge_conflicts.append(edge)
                     edge.node_conflicts.append(node)
 
-    def calculate_edge_to_edge_conflicts(self, robot_radius):
+    def calculate_edge_to_edge_conflicts(self, robot_radius):  # Dror: this can be improved by looking at edges of "near" vertices
         print("calculate_edge_to_edge_conflicts")
         i = 0
         for edge1 in self.edges:
@@ -145,7 +145,7 @@ def make_graph(cd, milestones, nn):
         p = milestone.point
         nearest = nn.neighbors_in_radius(p, Config.connection_radius)
         for neighbor in nearest:
-            if neighbor == milestone:
+            if neighbor == p:
                 continue
             edge = KER.Segment_2(KER.Point_2(p[0], p[1]), KER.Point_2(neighbor[0], neighbor[1]))
             if cd.is_edge_valid(edge):
