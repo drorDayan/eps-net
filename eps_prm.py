@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 import Collision_detection
 import CGALPY.Ker as KER
 import CGALPY.SS as SS
-
+import gc
 
 Config = Config()
 
@@ -55,9 +55,9 @@ class PrmGraph:
             return
         if neighbor_node in milestone.out_connections or neighbor_node in milestone.in_connections:
             return
-        milestone.out_connections[neighbor_node] = True
-        neighbor_node.in_connections[milestone] = True
         self.edges.append(PrmEdge(milestone, neighbor_node, self.edge_id))
+        milestone.out_connections[neighbor_node] = self.edges[-1]
+        neighbor_node.in_connections[milestone] = self.edges[-1]
         self.edge_id += 1
 
     def calculate_vertices_conflicts(self, nn, robot_radius):
@@ -71,22 +71,57 @@ class PrmGraph:
                 node.node_conflicts.append(neighbor_node)
                 neighbor_node.node_conflicts.append(node)
 
-    def calculate_edge_to_vertex_conflicts(self, robot_radius):
+    def calculate_edge_to_vertex_conflicts(self, robot_radius, nn):
         print("calculate_edge_to_vertex_conflicts")
         for edge in self.edges:
             edge.segment = KER.Segment_2(point_d_to_point_2(edge.src.point), point_d_to_point_2(edge.dest.point))
-            for point, node in self.points_to_nodes.items():
-                if KER.squared_distance(point_d_to_point_2(point), edge.segment) < KER.FT(4)*robot_radius*robot_radius:
+
+            sure_s = nn.neighbors_in_radius(edge.src.point, KER.FT(2)*robot_radius)
+            sure_d = nn.neighbors_in_radius(edge.dest.point, KER.FT(2)*robot_radius)
+            sure_p = set([self.points_to_nodes[point] for point in sure_s+sure_d])
+
+            for node in sure_p:
+                node.edge_conflicts.append(edge)
+                edge.node_conflicts.append(node)
+
+            x1 = nn.neighbors_in_radius(edge.src.point, KER.FT(2)*robot_radius+Config.connection_radius)
+            x2 = nn.neighbors_in_radius(edge.dest.point, KER.FT(2)*robot_radius+Config.connection_radius)
+            points = set([self.points_to_nodes[point] for point in x1+x2])
+            for node in points-sure_p:
+                if KER.squared_distance(point_d_to_point_2(node.point), edge.segment) < KER.FT(4)*robot_radius*robot_radius:
                     node.edge_conflicts.append(edge)
                     edge.node_conflicts.append(node)
 
-    def calculate_edge_to_edge_conflicts(self, robot_radius):  # Dror: this can be improved by looking at edges of "near" vertices
+    def calculate_edge_to_edge_conflicts(self, robot_radius, nn):  # Dror: this can be improved by looking at edges of "near" vertices
         print("calculate_edge_to_edge_conflicts")
         i = 0
         for edge1 in self.edges:
+            if i % 1000 == 0:
+                gc.collect()
             print(i)
             i += 1
-            for edge2 in self.edges:
+
+            sure_s = nn.neighbors_in_radius(edge1.src.point, KER.FT(2)*robot_radius)
+            sure_d = nn.neighbors_in_radius(edge1.dest.point, KER.FT(2)*robot_radius)
+            sure_p = set([self.points_to_nodes[point] for point in sure_s+sure_d])
+            sure_e = set()
+            for node in sure_p:
+                sure_e.update(list(node.in_connections.values())+list(node.out_connections.values()))
+
+            for edge2 in sure_e:
+                if edge1 == edge2 or edge2 in edge1.edge_conflicts:
+                    continue
+                edge1.edge_conflicts.add(edge2)
+                edge2.edge_conflicts.add(edge1)
+
+            maybe_s = nn.neighbors_in_radius(edge1.src.point, KER.FT(2)*robot_radius+KER.FT(2)*Config.connection_radius)
+            maybe_d = nn.neighbors_in_radius(edge1.dest.point, KER.FT(2)*robot_radius+KER.FT(2)*Config.connection_radius)
+            maybe_p = set([self.points_to_nodes[point] for point in maybe_s+maybe_d])
+            maybe_e = set()
+            for node in maybe_p:
+                maybe_e.update(list(node.in_connections.values())+list(node.out_connections.values()))
+
+            for edge2 in maybe_e-sure_e:
                 if edge1 == edge2 or edge2 in edge1.edge_conflicts:
                     continue
                 else:
@@ -169,8 +204,8 @@ def generate_path(path, starts, obstacles, destinations, in_radius):
     print("vertices amount:", len(g.points_to_nodes))
     print("edges amount:", len(g.edges))
     g.calculate_vertices_conflicts(nn, radius)
-    g.calculate_edge_to_vertex_conflicts(radius)
-    g.calculate_edge_to_edge_conflicts(radius)
+    g.calculate_edge_to_vertex_conflicts(radius, nn)
+    g.calculate_edge_to_edge_conflicts(radius, nn)
 
     with open(Config.out_file_name, "w") as f:
         f.write("vertices:\n")

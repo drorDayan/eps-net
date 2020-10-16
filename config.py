@@ -12,21 +12,21 @@ class Config(object):
 
     def __init__(self,):
         self.eps = 10
-        self.delta = 0.05
+        self.delta = 0.04
         self.is_multi_robot = True
-        self.sample_method = "random"
+        self.sample_method = "eps_net"
         self.reset()
 
     def reset(self):
-        self.out_file_name = ("multi" if self.is_multi_robot else "single")+str(self.eps)+"_"+str(self.delta)+"_"+self.sample_method+".ymal"
+        self.out_file_name = ("warehouse_2_d004_multi_" if self.is_multi_robot else "single")+str(self.eps)+"_"+str(self.delta)+"_"+self.sample_method+".ymal"
         print("out_file_name:", self.out_file_name)
         alpha = self.eps / sqrt(1 + self.eps ** 2)
-        y = self.eps/(2*(1+self.eps))
+        y = self.eps/(2*(2+self.eps))
         self.edge_len = 1 - 2 * self.delta
         if self.is_multi_robot:
             # These may change as we modify bounds in the paper
             self.ball_radius = y * self.delta
-            self.connection_radius = KER.FT(self.delta)
+            self.connection_radius = KER.FT(self.delta*((1+self.eps)/(2+self.eps)))
         else:
             self.ball_radius = alpha * self.delta
             self.connection_radius = KER.FT(2*(alpha+sqrt(1-alpha**2))*self.delta)
