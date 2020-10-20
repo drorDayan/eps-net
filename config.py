@@ -11,14 +11,16 @@ class Config(object):
         return Config.__instance
 
     def __init__(self,):
-        self.eps = 10
-        self.delta = 0.04
+        self.eps = 1000000000000000000000
+        self.delta = 0.01
         self.is_multi_robot = True
         self.sample_method = "eps_net"
+        self.run_a_star = True
+        self.create_yaml = False
         self.reset()
 
     def reset(self):
-        self.out_file_name = ("warehouse_2_d004_multi_" if self.is_multi_robot else "single")+str(self.eps)+"_"+str(self.delta)+"_"+self.sample_method+".ymal"
+        self.out_file_name = ("scene5_r006_d004_multi_" if self.is_multi_robot else "single")+str(self.eps)+"_"+str(self.delta)+"_"+self.sample_method+".ymal"
         print("out_file_name:", self.out_file_name)
         alpha = self.eps / sqrt(1 + self.eps ** 2)
         y = self.eps/(2*(2+self.eps))

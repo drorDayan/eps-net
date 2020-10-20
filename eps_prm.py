@@ -11,6 +11,7 @@ import Collision_detection
 import CGALPY.Ker as KER
 import CGALPY.SS as SS
 import gc
+import itertools
 
 Config = Config()
 
@@ -22,6 +23,7 @@ def point_d_to_point_2(x):
 class PrmNode:
     def __init__(self, pt, name):
         self.point = pt
+        self.point_2 = point_d_to_point_2(pt)
         self.name = name
         self.out_connections = {}
         self.in_connections = {}
@@ -34,9 +36,10 @@ class PrmEdge:
         self.src = src
         self.dest = dest
         self.name = "e"+str(eid)
-        self.segment = None
+        self.segment = KER.Segment_2(src.point_2, dest.point_2)
         self.node_conflicts = []
         self.edge_conflicts = set()
+        self.cost = sqrt(KER.squared_distance(src.point_2, dest.point_2).to_double())
 
 
 class PrmGraph:
@@ -74,8 +77,6 @@ class PrmGraph:
     def calculate_edge_to_vertex_conflicts(self, robot_radius, nn):
         print("calculate_edge_to_vertex_conflicts")
         for edge in self.edges:
-            edge.segment = KER.Segment_2(point_d_to_point_2(edge.src.point), point_d_to_point_2(edge.dest.point))
-
             sure_s = nn.neighbors_in_radius(edge.src.point, KER.FT(2)*robot_radius)
             sure_d = nn.neighbors_in_radius(edge.dest.point, KER.FT(2)*robot_radius)
             sure_p = set([self.points_to_nodes[point] for point in sure_s+sure_d])
@@ -128,6 +129,75 @@ class PrmGraph:
                     if KER.squared_distance(edge1.segment, edge2.segment) < KER.FT(4)*robot_radius*robot_radius:
                         edge1.edge_conflicts.add(edge2)
                         edge2.edge_conflicts.add(edge1)
+
+    def a_star(self, robot_radius, start_points, goal_points):
+        goal = tuple([self.points_to_nodes[p] for p in goal_points])
+
+        def h(p):
+            res = 0
+            for p1, p2 in zip(p, goal):
+                res += sqrt(KER.squared_distance(p1.point_2, p2.point_2).to_double())
+            return res
+
+        def get_neighbors(points):
+            # TODO: instead of product which makes both robots move I should move only one robot, this will make the result better
+            blah = [list(p.out_connections.keys())+list(p.in_connections.keys()) for p in points]
+            options = list(itertools.product(*blah))
+            res = []
+            for op in options:
+                is_good = True
+                for i in range(len(op)):
+                    for j in range(i+1, len(op)):
+                        if KER.squared_distance(op[i].point_2, op[j].point_2) < KER.FT(4)*robot_radius*robot_radius:
+                            is_good = False
+                if not is_good:
+                    continue
+
+                segs = tuple([points[i].in_connections[op[i]] if op[i] in points[i].in_connections else points[i].out_connections[op[i]] for i in range(len(points))])
+
+                for i in range(len(segs)):
+                    for j in range(i+1, len(segs)):
+                        if KER.squared_distance(segs[i].segment, segs[j].segment) < KER.FT(4)*robot_radius*robot_radius:
+                            is_good = False
+                if not is_good:
+                    continue
+
+                res.append((op, segs))
+            return res
+
+        temp_i = 0
+        start = tuple([self.points_to_nodes[p] for p in start_points])
+
+        def get_path(cf):
+            c = goal
+            path = [[p.point_2 for p in c]]
+            while c != start:
+                c = cf[c]
+                path.append([p.point_2 for p in c])
+            path.reverse()
+            return path
+
+        q = [(h(start), temp_i, start)]
+        heapq.heapify(q)
+        came_from = {}
+        g_score = {start: 0}
+        f_score = {start: h(start)}
+        while len(q) > 0:
+            curr_f_score, _, curr = heapq.heappop(q)
+            if curr_f_score > f_score[curr]:
+                continue
+            if curr == goal:
+                return g_score[curr], get_path(came_from)
+            for neighbor in get_neighbors(curr):
+                tentative_g_score = g_score[curr] + sum([e.cost for e in neighbor[1]])
+                if neighbor[0] not in g_score or tentative_g_score < g_score[neighbor[0]]:
+                    came_from[neighbor[0]] = curr
+                    g_score[neighbor[0]] = tentative_g_score
+                    f_score[neighbor[0]] = tentative_g_score + h(neighbor[0])
+                    temp_i += 1
+                    print(temp_i)
+                    heapq.heappush(q, (f_score[neighbor[0]], temp_i, neighbor[0]))
+        return "error no path found"
 
 
 def cords_to_2d_points(cords_x, cords_y):
@@ -203,49 +273,33 @@ def generate_path(path, starts, obstacles, destinations, in_radius):
     g = make_graph(cd, milestones, nn)
     print("vertices amount:", len(g.points_to_nodes))
     print("edges amount:", len(g.edges))
-    g.calculate_vertices_conflicts(nn, radius)
-    g.calculate_edge_to_vertex_conflicts(radius, nn)
-    g.calculate_edge_to_edge_conflicts(radius, nn)
+    if Config.run_a_star:
+        a_star_res, d_path = g.a_star(radius, [SS.Point_d(2, [start_p.x(), start_p.y()]) for start_p in starts],
+                              [SS.Point_d(2, [destination_p.x(), destination_p.y()]) for destination_p in destinations])
+        print("a_star_res:", a_star_res)
+    if Config.create_yaml:
+        g.calculate_vertices_conflicts(nn, radius)
+        g.calculate_edge_to_vertex_conflicts(radius, nn)
+        g.calculate_edge_to_edge_conflicts(radius, nn)
 
-    with open(Config.out_file_name, "w") as f:
-        f.write("vertices:\n")
-        for vertex in g.points_to_nodes.values():
-            f.write("  - name: " + vertex.name + "\n")
-            f.write("    pos: [" + str(vertex.point[0].to_double()) + ", " + str(vertex.point[1].to_double()) + "]\n")
-            f.write("    vertexConflicts: "+str([node.name for node in vertex.node_conflicts])+"\n")
-            f.write("    edgeConflicts: "+str([e.name for e in vertex.edge_conflicts])+"\n")
-        f.write("edges:\n")
-        for edge in g.edges:
-            f.write("  - name: " + edge.name + "\n")
-            f.write("    from: " + edge.src.name + "\n")
-            f.write("    to: " + edge.dest.name + "\n")
-            f.write("    edgeConflicts: "+str([e.name for e in edge.edge_conflicts])+"\n")
-            f.write("    vertexConflicts: "+str([node.name for node in edge.node_conflicts])+"\n")
-        f.flush()
+        with open(Config.out_file_name, "w") as f:
+            f.write("vertices:\n")
+            for vertex in g.points_to_nodes.values():
+                f.write("  - name: " + vertex.name + "\n")
+                f.write("    pos: [" + str(vertex.point[0].to_double()) + ", " + str(vertex.point[1].to_double()) + "]\n")
+                f.write("    vertexConflicts: "+str([node.name for node in vertex.node_conflicts])+"\n")
+                f.write("    edgeConflicts: "+str([e.name for e in vertex.edge_conflicts])+"\n")
+            f.write("edges:\n")
+            for edge in g.edges:
+                f.write("  - name: " + edge.name + "\n")
+                f.write("    from: " + edge.src.name + "\n")
+                f.write("    to: " + edge.dest.name + "\n")
+                f.write("    edgeConflicts: "+str([e.name for e in edge.edge_conflicts])+"\n")
+                f.write("    vertexConflicts: "+str([node.name for node in edge.node_conflicts])+"\n")
+            f.flush()
     print("GOODYYY", time.time()-start_t)
+    if Config.run_a_star:
+        for i in d_path:
+            path.append(i)
+
     return
-    # a = Segment_2(Point_2(0.5, 0.5), Point_2(21, 20.5))
-    # print("Segment_2:", a, "is valid:", cd.is_edge_valid(a))
-    # a = Segment_2(Point_2(0.5, 0.5), Point_2(1, 0.5))
-    # print("Segment_2:", a, "is valid:", cd.is_edge_valid(a))
-    # p = Point_2(FT(10.1), FT(10.1))
-    # print("Point_2:", p, "is valid:", cd.is_point_valid(p))
-    # p = Point_2(FT(1.1), FT(1.1))
-    # print("Point_2:", p, "is valid:", cd.is_point_valid(p))
-    # origin = two_d_point_to_2n_d_point(origin)
-    # destination = two_d_point_to_2n_d_point(destination)
-    # max_x, max_y, min_x, min_y = get_min_max(obstacles)
-    # if not cd.is_valid_conf(origin) or not cd.is_valid_conf(destination):
-    #     print("invalid input")
-    #     return False
-    # number_of_points_to_find = Config().sr_prm_config['number_of_milestones_to_find']
-    # milestones = generate_milestones(cd, number_of_points_to_find, max_x, max_y, min_x, min_y)
-    # g = make_graph(cd, milestones, origin, destination, create_sparse)
-    if g.has_path(origin, destination, create_sparse):
-        g.calc_bfs_dist_from_t(destination)
-        g.calc_real_dist_from_t(destination)
-        # print_sr_sparse_graph(g)
-        return True, g
-    else:
-        print("failed to find a valid path in prm")
-        return False, PrmGraph([])
