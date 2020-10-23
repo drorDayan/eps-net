@@ -11,8 +11,8 @@ class Config(object):
         return Config.__instance
 
     def __init__(self,):
-        self.eps = 1000000000000000000000
-        self.delta = 0.01
+        self.eps = 500000000
+        self.delta = 0.04
         self.is_multi_robot = True
         self.sample_method = "eps_net"
         self.run_a_star = True
@@ -28,7 +28,9 @@ class Config(object):
         if self.is_multi_robot:
             # These may change as we modify bounds in the paper
             self.ball_radius = y * self.delta
-            self.connection_radius = KER.FT(self.delta*((1+self.eps)/(2+self.eps)))
+            # self.connection_radius = KER.FT(self.delta)*(KER.FT(1+self.eps)/KER.FT(2+self.eps))
+            self.connection_radius = KER.FT(self.delta)*(KER.FT(1+self.eps)/KER.FT(2+self.eps))*KER.FT(1.0001)
+            # self.connection_radius = KER.FT(self.delta*1.001)
         else:
             self.ball_radius = alpha * self.delta
             self.connection_radius = KER.FT(2*(alpha+sqrt(1-alpha**2))*self.delta)

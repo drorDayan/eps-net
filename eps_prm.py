@@ -140,29 +140,29 @@ class PrmGraph:
             return res
 
         def get_neighbors(points):
-            # TODO: instead of product which makes both robots move I should move only one robot, this will make the result better
-            blah = [list(p.out_connections.keys())+list(p.in_connections.keys()) for p in points]
-            options = list(itertools.product(*blah))
+            connections_list = [list(p.out_connections.keys())+list(p.in_connections.keys()) for p in points]
             res = []
-            for op in options:
+            for i in range(len(points)):
                 is_good = True
-                for i in range(len(op)):
-                    for j in range(i+1, len(op)):
-                        if KER.squared_distance(op[i].point_2, op[j].point_2) < KER.FT(4)*robot_radius*robot_radius:
+                for next_point in connections_list[i]:
+                    for j in range(len(points)):
+                        if i == j:
+                            continue
+                        if KER.squared_distance(next_point.point_2, points[j].point_2) < KER.FT(4)*robot_radius*robot_radius:
                             is_good = False
-                if not is_good:
-                    continue
-
-                segs = tuple([points[i].in_connections[op[i]] if op[i] in points[i].in_connections else points[i].out_connections[op[i]] for i in range(len(points))])
-
-                for i in range(len(segs)):
-                    for j in range(i+1, len(segs)):
-                        if KER.squared_distance(segs[i].segment, segs[j].segment) < KER.FT(4)*robot_radius*robot_radius:
+                            break
+                    if not is_good:
+                        continue
+                    seg = points[i].in_connections[next_point] if next_point in points[i].in_connections else points[i].out_connections[next_point]
+                    for j in range(len(points)):
+                        if i == j:
+                            continue
+                        if KER.squared_distance(seg.segment, points[j].point_2) < KER.FT(4)*robot_radius*robot_radius:
                             is_good = False
-                if not is_good:
-                    continue
-
-                res.append((op, segs))
+                            break
+                    if not is_good:
+                        continue
+                    res.append((tuple([points[k] if k!=i else next_point for k in range(len(points))]), seg))
             return res
 
         temp_i = 0
@@ -188,15 +188,16 @@ class PrmGraph:
                 continue
             if curr == goal:
                 return g_score[curr], get_path(came_from)
-            for neighbor in get_neighbors(curr):
-                tentative_g_score = g_score[curr] + sum([e.cost for e in neighbor[1]])
-                if neighbor[0] not in g_score or tentative_g_score < g_score[neighbor[0]]:
-                    came_from[neighbor[0]] = curr
-                    g_score[neighbor[0]] = tentative_g_score
-                    f_score[neighbor[0]] = tentative_g_score + h(neighbor[0])
+            for neighbor, edge in get_neighbors(curr):
+                tentative_g_score = g_score[curr] + edge.cost
+                if neighbor not in g_score or tentative_g_score < g_score[neighbor]:
+                    came_from[neighbor] = curr
+                    g_score[neighbor] = tentative_g_score
+                    f_score[neighbor] = tentative_g_score + h(neighbor)
                     temp_i += 1
-                    print(temp_i)
-                    heapq.heappush(q, (f_score[neighbor[0]], temp_i, neighbor[0]))
+                    if temp_i % 100000 == 0:
+                        print(temp_i)
+                    heapq.heappush(q, (f_score[neighbor], temp_i, neighbor))
         return "error no path found"
 
 
@@ -302,4 +303,4 @@ def generate_path(path, starts, obstacles, destinations, in_radius):
         for i in d_path:
             path.append(i)
 
-    return
+    return a_star_res

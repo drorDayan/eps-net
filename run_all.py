@@ -6,11 +6,19 @@ conf = config.Config()
 
 
 def generate_path(path, starts, obstacles, destinations, in_radius):
-    for eps in [1000000, 100, 50, 20, 10, 5, 3, 2]:  # , 1, 0.25, 0.1, 0.01]:
+    res = []
+    eps_s = [50, 25, 20, 15, 10, 5, 3, 2.5, 2, 1, 0.75, 0.5, 0.25]
+    for eps in eps_s:  # , 1, 0.25, 0.1, 0.01]:
         conf.eps = eps
-        for sample_method in ["eps_net", "grid"]:
-            conf.sample_method = sample_method
+        print("eps=", eps)
+        # for sample_method in ["eps_net", "grid"]:
+        #     conf.sample_method = sample_method
             # calculate the rest of the configuration and run
-            conf.reset()
-            eps_prm.generate_path(path, starts, obstacles, destinations, in_radius)
-            gc.collect()
+        conf.reset()
+        curr_res = eps_prm.generate_path(path, starts, obstacles, destinations, in_radius)
+        res.append(curr_res)
+        gc.collect()
+        print("eps_s= ", eps_s)
+        print("res= ", res)
+    print("final eps_s= ", eps_s)
+    print("final res= ", res)
