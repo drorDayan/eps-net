@@ -11,7 +11,7 @@ class Config(object):
         return Config.__instance
 
     def __init__(self,):
-        self.eps = 500000000
+        self.eps = 1000
         self.delta = 0.04
         self.is_multi_robot = True
         self.sample_method = "eps_net"
@@ -33,7 +33,7 @@ class Config(object):
             # self.connection_radius = KER.FT(self.delta*1.001)
         else:
             self.ball_radius = alpha * self.delta
-            self.connection_radius = KER.FT(2*(alpha+sqrt(1-alpha**2))*self.delta)
+            self.connection_radius = KER.FT(2*(alpha+sqrt(1-alpha**2))*self.delta)*KER.FT(1.0001)
         unrounded_balls_per_dim = self.edge_len / (2 * self.ball_radius)
         print("unrounded number of balls:", unrounded_balls_per_dim ** 2 + (unrounded_balls_per_dim + 1) ** 2)
         self.balls_per_dim = ceil(unrounded_balls_per_dim)
