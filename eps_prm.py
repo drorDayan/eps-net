@@ -274,9 +274,10 @@ def generate_path(path, starts, obstacles, destinations, in_radius):
     g = make_graph(cd, milestones, nn)
     print("vertices amount:", len(g.points_to_nodes))
     print("edges amount:", len(g.edges))
+
     if Config.run_a_star:
         a_star_res, d_path = g.a_star(radius, [SS.Point_d(2, [start_p.x(), start_p.y()]) for start_p in starts],
-                              [SS.Point_d(2, [destination_p.x(), destination_p.y()]) for destination_p in destinations])
+                                      [SS.Point_d(2, [destination_p.x(), destination_p.y()]) for destination_p in destinations] )
         print("a_star_res:", a_star_res)
     if Config.create_yaml:
         g.calculate_vertices_conflicts(nn, radius)
@@ -302,5 +303,5 @@ def generate_path(path, starts, obstacles, destinations, in_radius):
     if Config.run_a_star:
         for i in d_path:
             path.append(i)
-
-    return a_star_res
+        return a_star_res
+    return 0

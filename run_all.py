@@ -7,7 +7,8 @@ conf = config.Config()
 
 def generate_path(path, starts, obstacles, destinations, in_radius):
     res = []
-    eps_s = [50, 25, 20, 15, 10, 5, 3, 2.5, 2, 1, 0.75]  # , 0.5, 0.25]
+    eps_s = [9999999, 50, 25, 10, 5, 2.5, 2, 1.5, 1, 0.75]  # , 0.5, 0.25]
+    # eps_s = [100, 50, 25, 15, 10, 5]
     # conf.sample_method = "grid"
     for eps in eps_s:  # , 1, 0.25, 0.1, 0.01]:
         conf.eps = eps
