@@ -181,10 +181,14 @@ class PrmGraph:
         heapq.heapify(q)
         came_from = {}
         g_score = {start: 0}
-        f_score = {start: h(start)}
+        temp_j = 0
         while len(q) > 0:
             curr_f_score, _, curr = heapq.heappop(q)
-            if curr_f_score > f_score[curr]:
+            if curr_f_score > (g_score[curr]+h(curr)):
+                temp_j += 1
+                if temp_j % 100000 == 0:
+                    print("temp_j", temp_j)
+                    print(len(q), " ", len(came_from))
                 continue
             if curr == goal:
                 return g_score[curr], get_path(came_from)
@@ -193,11 +197,14 @@ class PrmGraph:
                 if neighbor not in g_score or tentative_g_score < g_score[neighbor]:
                     came_from[neighbor] = curr
                     g_score[neighbor] = tentative_g_score
-                    f_score[neighbor] = tentative_g_score + h(neighbor)
                     temp_i += 1
                     if temp_i % 100000 == 0:
                         print(temp_i)
-                    heapq.heappush(q, (f_score[neighbor], temp_i, neighbor))
+                        print(len(q), " ", len(came_from))
+                        if temp_i % 1000000 == 0:
+                            # TODO remove duplications?
+                            gc.collect()
+                    heapq.heappush(q, (tentative_g_score + h(neighbor), temp_i, neighbor))
         return "error no path found"
 
 

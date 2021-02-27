@@ -11,12 +11,12 @@ class Config(object):
         return Config.__instance
 
     def __init__(self,):
-        self.eps = 1.5
-        self.delta = 0.02
+        self.eps = 999999
+        self.delta = 0.03
         self.is_multi_robot = True
         self.sample_method = "eps_net"
-        self.run_a_star = False
-        self.create_yaml = True
+        self.run_a_star = True
+        self.create_yaml = False
         self.reset()
 
     def reset(self):
