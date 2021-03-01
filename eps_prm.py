@@ -205,7 +205,8 @@ class PrmGraph:
                             # TODO remove duplications?
                             gc.collect()
                     heapq.heappush(q, (tentative_g_score + h(neighbor), temp_i, neighbor))
-        return "error no path found"
+        print("error no path found")
+        return 99999999999,[]
 
 
 def cords_to_2d_points(cords_x, cords_y):
