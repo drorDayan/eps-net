@@ -206,7 +206,7 @@ class PrmGraph:
                             gc.collect()
                     heapq.heappush(q, (tentative_g_score + h(neighbor), temp_i, neighbor))
         print("error no path found")
-        return 99999999999,[]
+        return 99999999999, []
 
 
 def cords_to_2d_points(cords_x, cords_y):
@@ -307,9 +307,10 @@ def generate_path(path, starts, obstacles, destinations, in_radius):
                 f.write("    edgeConflicts: "+str([e.name for e in edge.edge_conflicts])+"\n")
                 f.write("    vertexConflicts: "+str([node.name for node in edge.node_conflicts])+"\n")
             f.flush()
-    print("GOODYYY", time.time()-start_t)
+    took = time.time()-start_t
+    print("GOODYYY", took)
     if Config.run_a_star:
         for i in d_path:
             path.append(i)
-        return a_star_res
+        return a_star_res, took
     return 0

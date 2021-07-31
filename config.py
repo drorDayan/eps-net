@@ -11,8 +11,8 @@ class Config(object):
         return Config.__instance
 
     def __init__(self,):
-        self.eps = 999999
-        self.delta = 0.03
+        self.eps = 20
+        self.delta = 0.04
         self.is_multi_robot = True
         self.sample_method = "eps_net"
         self.run_a_star = True
