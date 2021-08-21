@@ -2,16 +2,11 @@ from config import *
 import time
 import random
 from sr_neighbor_finder import NeighborsFinder
-import queue
 import heapq
-import math
-import numpy as np
-import matplotlib.pyplot as plt
 import Collision_detection
 import CGALPY.Ker as KER
 import CGALPY.SS as SS
 import gc
-import itertools
 
 Config = Config()
 
