@@ -61,7 +61,7 @@ def create_fig():
     plt.plot(spiral_eps_s, spiral_my_res, "m.", label="2-robots: spiral", linestyle="solid")
     plt.plot(four_robots_eps_s, four_robots_my_res, "r.", label="4-robots", linestyle="solid")
     plt.plot(multi_eps_s, multi_my_res, "b.", label="7-robots", linestyle="solid")
-    plt.xlabel("$\\varepsilon$")
+    plt.xlabel("Approximation parameter $\\varepsilon$")
     plt.ylabel("cost($\\widehat{\\Sigma}$)/cost(OPT$_\\delta$)")
     plt.title("Approximation of optimal $\\delta$-clear solution as a function of $\\varepsilon$")
     plt.axhline(y=1, color="k", linewidth=0.6, linestyle="--", label="Optimal $\\delta$-clear")
@@ -83,7 +83,7 @@ def create_fig():
                      textcoords='axes fraction', xytext=(multi_annotations_pos[i]), color="b", fontsize="small")
 
     # plt.show()
-    plt.savefig("exp_res.pdf")#, bbox_inches='tight', pad_inches=0.2)
+    plt.savefig("exp_res.png")#, bbox_inches='tight', pad_inches=0.2)
 
 
 def opt_rand_vs_sg():
@@ -259,13 +259,13 @@ def spiral_rand_vs_sg():
 
 def rand_vs_sg_figs():
     eps_s = ["$\\infty$", "25", "10", "5", "2.5", "1.5", "1"]
-    spiral_rand_valid_res = [0, 0, 0, 1, 4, 10, 10]
-    opt_rand_valid_res = [9, 8, 9, 10, 10, 10, 10]
+    spiral_rand_valid_res = [0, 0, 0, 0.1, 0.4, 1.0, 1.0]
+    opt_rand_valid_res = [0.9, 0.8, 0.9, 1.0, 1.0, 1.0, 1.0]
 
     plt.plot(eps_s, opt_rand_valid_res, "g.", label="2-robots: obstacle-free", linestyle="solid")
     plt.plot(eps_s, spiral_rand_valid_res, "m.", label="2-robots: spiral", linestyle="solid")
 
-    plt.xlabel("$\\varepsilon$")
+    plt.xlabel("Approximation parameter $\\varepsilon$")
     plt.ylabel("Success rate")
     plt.title("Success rate using random sampling")
     plt.legend()
@@ -280,20 +280,20 @@ def rand_vs_sg_figs():
 
     opt_rand_avg_res = [1.556668652384059, 1.5282706548455294, 1.4644623346246861, 1.4051619747327415, 1.3530479243973603, 1.3223064705636822, 1.3038313701893416]
     opt_eps_net_final_res = [1.3742365549272302, 1.373279226253925, 1.3721165441830794, 1.3674488423712654, 1.3633612251566565, 1.3017236723780092, 1.30034735466921]
-    opt_cost = []
-    for i in range(len(opt_rand_avg_res)):
-        opt_cost.append(opt_rand_avg_res[i]/opt_eps_net_final_res[i])
-
-    plt.plot(eps_s, opt_cost, "g.", label="2-robots: obstacle-free", linestyle="solid")
-    plt.plot(eps_s[3:], spiral_cost[3:], "m.", label="2-robots: spiral", linestyle="solid")
-    plt.axhline(y=1, color="k", linewidth=0.6, linestyle="--", label="Equal")
-
-    plt.xlabel("$\\varepsilon$")
-    plt.ylabel("cost(random sampling)/cost(staggered grid)")
-    plt.title("Average cost of successful runs using random sampling \ncompared with the cost using the staggered grid")
-    plt.legend()
-    plt.savefig("rnd_vs_sg_cost.png")
-    plt.clf()
+    # opt_cost = []
+    # for i in range(len(opt_rand_avg_res)):
+    #     opt_cost.append(opt_rand_avg_res[i]/opt_eps_net_final_res[i])
+    #
+    # plt.plot(eps_s, opt_cost, "g.", label="2-robots: obstacle-free", linestyle="solid")
+    # plt.plot(eps_s[3:], spiral_cost[3:], "m.", label="2-robots: spiral", linestyle="solid")
+    # plt.axhline(y=1, color="k", linewidth=0.6, linestyle="--", label="Equal")
+    #
+    # plt.xlabel("$\\varepsilon$")
+    # plt.ylabel("cost(random sampling)/cost(staggered grid)")
+    # plt.title("Average cost of successful runs using random sampling \ncompared with the cost using the staggered grid")
+    # plt.legend()
+    # plt.savefig("rnd_vs_sg_cost.png")
+    # plt.clf()
 
     # plt.plot(eps_s, spiral_eps_net_avg_valid_times, "g.", label="2-robots: obstacle-free", linestyle="solid")
     # plt.plot(eps_s[3:], spiral_rand_avg_valid_times[3:], "m.", label="2-robots: spiral", linestyle="solid")
@@ -302,44 +302,44 @@ def rand_vs_sg_figs():
 
     plt.plot(eps_s, opt_rand_avg_res, "b.", label="random sampling", linestyle="solid")
     plt.plot(eps_s, opt_eps_net_final_res, "r.", label="staggered grid", linestyle="solid")
-    plt.xlabel("$\\varepsilon$")
-    plt.ylabel("cost")
-    plt.title("Average cost of successful runs using random sampling compared \nwith the cost using the staggered grid for the obstacle-free scene")
+    plt.xlabel("Approximation parameter $\\varepsilon$")
+    plt.ylabel("Solution cost")
+    # plt.title("Average cost of successful runs using random sampling compared \nwith the cost using the staggered grid for the obstacle-free scene")
     plt.legend()
     plt.savefig("rnd_vs_sg_costs_opt.png")
     plt.clf()
 
     plt.plot(eps_s, spiral_eps_net_final_res, "r.", label="staggered grid", linestyle="solid")
     plt.plot(eps_s[3:], spiral_rand_avg_res[3:], "b.", label="random sampling", linestyle="solid")
-    plt.xlabel("$\\varepsilon$")
-    plt.ylabel("cost")
-    plt.title("Average cost of successful runs using random sampling compared \nwith the cost using the staggered grid for the spiral scene")
+    plt.xlabel("Approximation parameter $\\varepsilon$")
+    plt.ylabel("Solution cost")
+    # plt.title("Average cost of successful runs using random sampling compared \nwith the cost using the staggered grid for the spiral scene")
     plt.legend()
     plt.savefig("rnd_vs_sg_costs_spiral.png")
     plt.clf()
 
 
 if __name__ == "__main__":
-    eps_s = ["$\\infty$", "25", "10", "5", "3", "2.7", "2.5", "2", "1.9", "1.8", "1.7", "1.5", "1.3", "1.2", "1"]
-    times_not_shifted = [62.76637029647827, 87.62836837768555, 123.72280311584473, 217.94697213172913, 430.56999707221985,
-             506.05531907081604, 652.41943192482, 1331.0657453536987, 1501.7965757846832, 1413.9877769947052,
-             148.2530117034912, 170.5772032737732, 230.12888193130493, 293.20365953445435, 657.0379984378815]
-    times_shifted = [59.81222200393677, 90.5360701084137, 125.10961627960205, 220.47307109832764, 440.3311188220978,
-             515.9197416305542, 651.3253591060638, 1351.9044961929321, 1551.1296701431274, 1423.5932638645172,
-             164.0403208732605, 175.94597864151, 235.04816436767578, 299.7134027481079, 663.4945273399353]
+    # eps_s = ["$\\infty$", "25", "10", "5", "3", "2.7", "2.5", "2", "1.9", "1.8", "1.7", "1.5", "1.3", "1.2", "1"]
+    # times_not_shifted = [62.76637029647827, 87.62836837768555, 123.72280311584473, 217.94697213172913, 430.56999707221985,
+    #          506.05531907081604, 652.41943192482, 1331.0657453536987, 1501.7965757846832, 1413.9877769947052,
+    #          148.2530117034912, 170.5772032737732, 230.12888193130493, 293.20365953445435, 657.0379984378815]
+    # times_shifted = [59.81222200393677, 90.5360701084137, 125.10961627960205, 220.47307109832764, 440.3311188220978,
+    #          515.9197416305542, 651.3253591060638, 1351.9044961929321, 1551.1296701431274, 1423.5932638645172,
+    #          164.0403208732605, 175.94597864151, 235.04816436767578, 299.7134027481079, 663.4945273399353]
+    #
+    # plt.plot(eps_s, times_shifted, "r.", label="shifted", linestyle="solid")
+    # plt.plot(eps_s, times_not_shifted, "g.", label="regular", linestyle="solid")
+    # plt.legend()
+    # plt.savefig("fig.png")
+    # plt.clf()
 
-    plt.plot(eps_s, times_shifted, "r.", label="shifted", linestyle="solid")
-    plt.plot(eps_s, times_not_shifted, "g.", label="regular", linestyle="solid")
-    plt.legend()
-    plt.savefig("fig.png")
-    plt.clf()
-
-    print(colored("spiral_rand_vs_sg", "red"))
-    spiral_rand_vs_sg()
-    print(colored("opt_rand_vs_sg", "red"))
-    opt_rand_vs_sg()
+    # print(colored("spiral_rand_vs_sg", "red"))
+    # spiral_rand_vs_sg()
+    # print(colored("opt_rand_vs_sg", "red"))
+    # opt_rand_vs_sg()
     rand_vs_sg_figs()
-    exit()
+    # exit()
     create_fig()
     exit()
     # with open("warehouse_2_d004_multi_100000_0.04_eps_net.ymal") as file:
